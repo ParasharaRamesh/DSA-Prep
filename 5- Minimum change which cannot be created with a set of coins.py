@@ -1,8 +1,23 @@
 from functools import lru_cache
 from itertools import *
 
-
+#optimal approach
 def nonConstructibleChange(coins):
+    #sort it
+    coins.sort()
+
+    currChangeCreated = 0
+    for coin in coins:
+        if coin > currChangeCreated + 1:
+            return currChangeCreated + 1
+
+        #as if coin <= currCHangeCreated+ 1 => change is creatable in range of [currCHange, coin + currChange]
+        currChangeCreated += coin
+
+    return currChangeCreated + 1
+
+# non optimal approach, check if for each sum is it constructible using recursion and caching
+def nonConstructibleChange1(coins):
     # if no coins change is 1
     if len(coins) == 0:
         return 1
