@@ -1,54 +1,4 @@
-# movement checks
-def isRightPossible(i, j, n, m, visited):
-    xCheck = (i >= 0) and (i < n)
-    yCheck = (j + 1 >= 0) and (j + 1 < m)
-    isAlreadyVisited = (i, j + 1) in visited
-
-    return xCheck and yCheck and not isAlreadyVisited
-
-
-def isDownPossible(i, j, n, m, visited):
-    xCheck = (i + 1 >= 0) and (i + 1 < n)
-    yCheck = (j >= 0) and (j < m)
-    isAlreadyVisited = (i + 1, j) in visited
-
-    return xCheck and yCheck and not isAlreadyVisited
-
-
-def isLeftPossible(i, j, n, m, visited):
-    xCheck = (i >= 0) and (i < n)
-    yCheck = (j - 1 >= 0) and (j - 1 < m)
-    isAlreadyVisited = (i, j - 1) in visited
-
-    return xCheck and yCheck and not isAlreadyVisited
-
-
-def isUpPossible(i, j, n, m, visited):
-    xCheck = (i - 1 >= 0) and (i - 1 < n)
-    yCheck = (j >= 0) and (j < m)
-    isAlreadyVisited = (i - 1, j) in visited
-
-    return xCheck and yCheck and not isAlreadyVisited
-
-
-# movement functions
-def moveRight(i, j):
-    return i, j + 1
-
-
-def moveDown(i, j):
-    return i + 1, j
-
-
-def moveLeft(i, j):
-    return i, j - 1
-
-
-def moveUp(i, j):
-    return i - 1, j
-
-
-# can add to visited check
+# is it possible to add to visited set
 def canAddToVisited(i, j, n, m, visited):
     xCheck = (i >= 0) and (i < n)
     yCheck = (j >= 0) and (j < m)
@@ -57,6 +7,34 @@ def canAddToVisited(i, j, n, m, visited):
     return xCheck and yCheck and not isAlreadyVisited
 
 
+# movement checks
+def isRightPossible(i, j, n, m, visited):
+    return canAddToVisited(i, j + 1, n, m, visited)
+
+def isDownPossible(i, j, n, m, visited):
+    return canAddToVisited(i + 1, j, n, m, visited)
+
+def isLeftPossible(i, j, n, m, visited):
+    return canAddToVisited(i, j - 1, n, m, visited)
+
+def isUpPossible(i, j, n, m, visited):
+    return canAddToVisited(i - 1, j, n, m, visited)
+
+
+# movement functions
+def moveRight(i, j):
+    return i, j + 1
+
+def moveDown(i, j):
+    return i + 1, j
+
+def moveLeft(i, j):
+    return i, j - 1
+
+def moveUp(i, j):
+    return i - 1, j
+
+#main
 def spiralTraverse(array):
     visited = set()
     spiralList = []
@@ -67,7 +45,7 @@ def spiralTraverse(array):
     n = len(array)
     m = len(array[0])
 
-    # start from (0,0)
+    # indices
     i = 0
     j = 0
     movementIndex = 0
@@ -80,7 +58,7 @@ def spiralTraverse(array):
         if movementChecks[movementIndex](i, j, n, m, visited):
             i, j = movements[movementIndex](i, j)
         else:
-            # cycle through movements
+            # cycle through movements only if the current movement fails
             movementIndex = (movementIndex + 1) % len(movements)
 
     return spiralList
