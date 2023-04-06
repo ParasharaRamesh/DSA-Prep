@@ -1,10 +1,42 @@
 from collections import OrderedDict
 from functools import reduce
 
+
+# old approach
+def firstDuplicateValueOld(array):
+    # get indices of occurence
+    count = OrderedDict()
+    for i, x in enumerate(array):
+        if x not in count:
+            count[x] = [i]
+        else:
+            count[x].append(i)
+
+    # if there are no duplicates might as well return -1
+    duplicates = dict()
+
+    areThereDuplicates = False
+    for k in count:
+        if len(count[k]) > 1:
+            areThereDuplicates = True
+            duplicates[k] = count[k]
+
+    if not areThereDuplicates:
+        return -1
+
+    # now amongst duplicates modify it such a way that no more than 2 elements exist in the array,
+    for k in duplicates:
+        if len(duplicates[k]) > 2:
+            duplicates[k] = duplicates[k][:2]  # only keep first two and discard rest!
+
+    return compareAllRanges(duplicates)
+
+
 def compareAllRanges(duplicates):
     duplicateItems = duplicates.items()  # [k, [0,1]]
     minDuplicate = reduce(compareAndFindMinBetweenTwoDuplicates, duplicateItems)
-    return minDuplicate[0] #get the element
+    return minDuplicate[0]  # get the element
+
 
 def compareAndFindMinBetweenTwoDuplicates(duplicate1, duplicate2):
     # should also return in form of [k, [occ0, occ1]]
@@ -42,36 +74,26 @@ def compareAndFindMinBetweenTwoDuplicates(duplicate1, duplicate2):
     else:
         return [ele2, [twoSmall, twoEnd]]
 
+
+# new approach
 def firstDuplicateValue(array):
-    # get indices of occurence
-    count = OrderedDict()
-    for i, x in enumerate(array):
-        if x not in count:
-            count[x] = [i]
+    i = 0
+
+    while i < len(array):
+        newIndex = abs(array[i]) - 1
+
+        if array[newIndex] > 0:
+            array[newIndex] *= -1
         else:
-            count[x].append(i)
+            return newIndex + 1
 
-    # if there are no duplicates might as well return -1
-    duplicates = dict()
+        i += 1
 
-    areThereDuplicates = False
-    for k in count:
-        if len(count[k]) > 1:
-            areThereDuplicates = True
-            duplicates[k] = count[k]
-
-    if not areThereDuplicates:
-        return -1
-
-    # now amongst duplicates modify it such a way that no more than 2 elements exist in the array,
-    for k in duplicates:
-        if len(duplicates[k]) > 2:
-            duplicates[k] = duplicates[k][:2]  # only keep first two and discard rest!
-
-    return compareAllRanges(duplicates)
+    return -1
 
 
 if __name__ == '__main__':
-    # array = [2, 1, 5, 3, 3, 2, 4]  # 3
-    array = [2, 1, 2, 5, 3, 3, 2, 4]  # 2
+    array = [2, 1, 5, 3, 3, 2, 4]  # 3
+    # array = [2, 1, 2, 5, 3, 3, 2, 4]  # 2
+    # array = [2, 1, 2]  # 2
     print(firstDuplicateValue(array))
