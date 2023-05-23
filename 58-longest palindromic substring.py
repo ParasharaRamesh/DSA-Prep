@@ -92,5 +92,4 @@ class Solution:
 
 if __name__ == '__main__':
     word = "abaxyzzyxf"  # xyzzyxgv
-    # print(longestPalindromicSubstring(word))
     print(Solution().longestPalindrome(word))
