@@ -53,7 +53,6 @@ def multiStringSearch(bigString, smallStrings):
             results.append(False)
         else:
             results.append(searchTrie(tries[ch], smallString))
-
     return results
 
 
