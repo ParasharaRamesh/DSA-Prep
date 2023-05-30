@@ -1,3 +1,10 @@
+'''
+given n cities where i -> i+1 has a distance[i] and to travel it you need to have fuel[i] * miles per gallon at that city > distance[i
+
+going in clockwise direction is there a point where we go all the way around and reach this city back?
+'''
+
+
 def simulateAndFindNext(deficits):
     total = 0
     for i, d in enumerate(deficits):
