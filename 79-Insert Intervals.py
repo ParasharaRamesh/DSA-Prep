@@ -1,5 +1,5 @@
 from bisect import *
-
+from typing import *
 
 class Solution:
     def tryMerging(self, interval, merger):
