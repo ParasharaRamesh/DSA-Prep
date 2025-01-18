@@ -12,6 +12,8 @@ class SegmentTreeNode:
         self.right = right
         self.parent = parent
 
+    def __str__(self):
+        return f"Node(start={self.start}, end={self.end}, val={self.val}, parent={self.parent}, left={self.left}, right={self.right})"
 
 class SegmentTree:
     def __init__(self, arr):
@@ -20,46 +22,47 @@ class SegmentTree:
         # storing it as adjacency tree with extra vars is easier than array [(l,r) => SegmentTreeNode object]
         self.tree = dict()
 
-        # self.tree = [] # apparently size of 4n always suffices , but using dictionary is better
+        if len(arr) > 0:
+            self.build(0, len(self.arr) - 1)
+            print("Initialized segment tree")
+        else:
+            print("array is empty")
 
-    def aggregate(self, val1, val2):
-        '''
-            this can change based on the problem but setting to min for now
-        '''
+    def range_func(self, val1, val2):
         return min(val1, val2)
 
-    def build(self, arr):
+    def build(self, start, end):
         '''
             build from the leaves as the leaves will be the individual elements and coming to the root will be the whole array.
             in case we are building it as an array the root will cover the entire array from (0,n-1) and its left and right indices will be 2i + 1 & 2i + 2.
         '''
-        start = 0
-        end = len(arr) - 1
-        mid = start + (end - start) // 2
-
-        # create root for the whole range
-        root = SegmentTreeNode(start, end)
-
         if start == end:
             # base case (leaf)
-            root.val = arr[mid]
-        else:
-            # left node (start -> mid)
-            left_val = self.build(arr[start: mid + 1])
-            left = SegmentTreeNode(start, mid, left_val, None, None, root)
+            leaf = SegmentTreeNode(start, end, val=self.arr[start])
+            self.tree[(start, end)] = leaf
+            return leaf
 
-            # right node (mid + 1 -> end)
-            right_val = self.build(arr[mid + 1: end])
-            right = SegmentTreeNode(mid + 1, end, right_val, None, None, root)
+        # create node
+        node = SegmentTreeNode(start, end)
 
-            # change the properties of the root
-            root.left = left
-            root.right = right
-            root.val = self.aggregate(left_val, right_val)
+        mid = start + (end - start) // 2
 
-        # save in segment tree
-        self.tree[(start, end)] = root
-        return root.val
+        # left node (start -> mid)
+        left_node = self.build(start, mid)
+        left_node.parent = node
+
+        # right node (mid + 1 -> end)
+        right_node = self.build(mid + 1, end)
+        right_node.parent = node
+
+        # change the properties of the root
+        node.left = left_node
+        node.right = right_node
+        node.val = self.range_func(left_node.val, right_node.val)
+
+        # save in tree
+        self.tree[(start, end)] = node
+        return node
 
     def query(self, l, r, start=None, end=None):
         '''
@@ -78,22 +81,18 @@ class SegmentTree:
 
         # complete overlap case
         if (l <= start) and (end <= r):
-            return self.tree[(start, end)]
+            return self.tree[(start, end)].val
 
         # partial case (refer both paths)
         mid = start + (end - start) // 2
         left_query = self.query(l, r, start, mid)
         right_query = self.query(l, r, mid + 1, end)
-        return self.aggregate(left_query, right_query)
+        return self.range_func(left_query, right_query)
 
-    def update(self, i, updated_value, start=None, end=None):
+    def update(self, i, updated_value):
         '''
         find the leaf, from there repopulate the parents
         '''
-        if start == None and end == None:
-            start = 0
-            end = len(self.arr) - 1
-
         # directly updated that node
         self.tree[(i, i)].val = updated_value
 
@@ -101,10 +100,22 @@ class SegmentTree:
         curr = self.tree[(i, i)]
 
         while curr.parent != None:
-            #curr would have been left or right
-            curr.parent.val = self.aggregate(curr.parent.left.val, curr.parent.right.val)
+            # curr would have been left or right
+            curr.parent.val = self.range_func(curr.parent.left.val, curr.parent.right.val)
 
             curr = curr.parent
 
+
 if __name__ == '__main__':
-    pass
+    arr = [0, 1, 2, 3, 4]
+    tree = SegmentTree(arr)
+    print("Finished tree building")
+
+    #queries
+    # print(tree.query(1, 1))
+    # print(tree.query(1, 2))
+    # print(tree.query(1, 3))
+
+    #updates
+    print(tree.update(3, -1))
+    print(tree.query(1, 4))
