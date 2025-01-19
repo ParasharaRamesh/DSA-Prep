@@ -6,14 +6,17 @@ right child = 2i + 2
 parent = (i-1)//2
 
 '''
-
-
 class SegmentTree:
     def __init__(self, arr):
         self.arr = arr
 
+        # in case of Range Min it is if, in case of Range sum it can be 0
+        # self.SPECIAL = float("inf")
+        self.SPECIAL = 0
+
         # apparently need 4n space
-        self.tree = [float("inf")] * len(self.arr) * 4
+        self.tree = [self.SPECIAL] * len(self.arr) * 4
+        self.lazy = [self.SPECIAL] * len(self.arr) * 4
 
         if len(arr) > 0:
             self.build(0, len(self.arr) - 1)
@@ -22,7 +25,8 @@ class SegmentTree:
             print("array is empty")
 
     def range_func(self, val1, val2):
-        return min(val1, val2)
+        # return min(val1, val2)
+        return sum([val1, val2])
 
     def build(self, l, r, tree_index=0):
         '''
@@ -51,10 +55,10 @@ class SegmentTree:
         l,r = the range of the query passed ( will be passed down entirely)
         start, end will be the range of that tree node
 
-        Three cases wrt a node:
-        1. No overlap with range: return some invalid token [l r start end] or [start end l r]
-        2. Complete overlap with range (l, r): i.e.  [l  start  end  r]: return as is
-        3. Partial overlap with range: (l,r) is a subset of the node's (start, end) => [l <= start <=r <= end] or [start <= l <= end <= r] => check both and return
+        Three cases wrt a node's start,end when compared with the given range:
+        1. No overlap with range: return some invalid token [l r Start End] or [Start End l r]
+        2. Complete overlap with range (l, r): i.e.  [l  Start  End  r]: return as is
+        3. Partial overlap with range: (l,r) is a subset of the node's (start, end) => [l <= Start <=r <= End] or [Start <= l <= End <= r]  or [Start, l, r, End]
         '''
 
         if start == None and end == None:
@@ -63,7 +67,7 @@ class SegmentTree:
 
         # no overlap case
         if (r < start) or (l > end):
-            return float("inf")
+            return self.SPECIAL
 
         # complete overlap case
         if (l <= start) and (end <= r):
@@ -120,6 +124,25 @@ class SegmentTree:
         # now update the current node
         self.tree[tree_index] = self.range_func(self.tree[left_tree_index], self.tree[right_tree_index])
 
+    def range_update(self, l, r, val, tree_index=0, start=None, end=None):
+        '''
+        We are assuming that all nodes in this range of l-> r are all going to be incremented by val from their original values.
+            * Idea is to maintain a parallel tree called lazy_tree which holds the updates needed for that node (along with their children)
+            * For every node we visit, if at all it happened to have a lazy update value in that node; update it first and ask its children to get updated later on
+            * same 3 cases here also, wrt a node's start,end
+                a. if there is no overlap of the node in the range l,r : no need to update anything just return
+                b. if there is a complete overlap of that node's start,end inside the l,r : update that node directly
+                    - now this is interesting because this node might be responsible for a whole range of nodes under it (so instead of going all the way to each of the leave's and updating them we do the following)
+                    - for this node's start -> end it is responsible for (end - start +1) #no of nodes
+                    - since each of those node's will be updated, we can make a guesstimate of how this node will be updated (e.g. in case of range sum, all of the nodes will be added by "val" so the total new update
+                        will be current value + (no of nodes under it) * val
+                    - once this is done, we still need to update the leaves, but since we are lazy we can do it later, so just mark the lazy update value for its children ( and all of its children under it ) to be done by "val"
+                    - this way when it is visited later on it will get updated correctly
+                c. if there is partial overlap: just do it for the left and right one and then update the current node (baesd on those two values)
+
+        If we really care for making sure that this lazy thing works even during querying. The lazy update can happen during one of the queries also so that way things are always in an upto date state
+        '''
+        pass
 
 if __name__ == '__main__':
     arr = [0, 1, 2, 3, 4]
@@ -133,6 +156,8 @@ if __name__ == '__main__':
     print(tree.query(2, 4))
 
     # updates
-    print(tree.update(3, -1))
-    print(tree.query(1, 4))
-    print(tree.query(2, 3))
+    # print(tree.update(3, -1))
+    #
+    # # testing the query again
+    # print(tree.query(1, 4))
+    # print(tree.query(2, 3))
