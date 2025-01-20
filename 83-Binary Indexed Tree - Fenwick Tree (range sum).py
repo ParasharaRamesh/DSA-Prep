@@ -1,6 +1,9 @@
 '''
 Binary Indexed Tree (Fenwick Tree):
 
+* USUALLY USED WHEN THE OPERATIONS ARE INVERTABLE AND PREFIX LIKE ( E.G. SUM, PRODUCT)
+* HARD TO USE THIS FOR RANGE MINIMUM QUERIES! ( can use 2 different BIT's in reverse to get this )
+
 * better to use 1 based indexing. BIT[0] stores no important information
 * idea is that each index of this tree stores some partial range related answer
 * given a number x:
