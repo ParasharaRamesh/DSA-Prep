@@ -58,7 +58,7 @@ class SegmentTree:
         Three cases wrt a node's start,end when compared with the given range:
         1. No overlap with range: return some invalid token [l r Start End] or [Start End l r]
         2. Complete overlap with range (l, r): i.e.  [l  Start  End  r]: return as is
-        3. Partial overlap with range: (l,r) is a subset of the node's (start, end) => [l <= Start <=r <= End] or [Start <= l <= End <= r]  or [Start, l, r, End]
+        3. Partial overlap with range: (l,r) is a subset of the node's (start, end) => [l <= Start <= r <= End] or [Start <= l <= End <= r]  or [Start, l, r, End]
         '''
 
         if start == None and end == None:
