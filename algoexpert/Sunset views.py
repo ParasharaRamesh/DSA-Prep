@@ -1,5 +1,12 @@
 from collections import deque
 
+'''
+Given an array of buildings facing a particular direction (east of west). 
+A building is said to see the sunset only iff all the buildings that follow it in that direction are strictly smaller than itself.
+ So find out the indices of the buildings which can see the sunset
+
+'''
+
 def sunsetViews(buildings, direction):
     if len(buildings) == 0:
         return []

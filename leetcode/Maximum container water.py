@@ -3,6 +3,23 @@ from typing import *
 
 class Solution:
     def maxArea(self, heights: List[int]) -> int:
+        start = 0
+        end = len(heights) - 1
+
+        ma = 0
+        while start < end:
+            ma = max(ma, (end - start) * min(heights[start], heights[end]))
+
+            if heights[start] < heights[end]:
+                start += 1
+            elif heights[start] > heights[end]:
+                end -= 1
+            else:
+                end -= 1
+
+
+        return ma
+    def maxArea_suboptimal(self, heights: List[int]) -> int:
         left = 0
         right = len(heights) - 1
 
