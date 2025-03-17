@@ -19,8 +19,9 @@ Main ideas of this algorithm:
         b. but since that mirrored value could have a longer substring strectching beyond the left boundary of L, then the value is just R - i
         c. we take the lower bound between these two to ensure a fair starting point to expand from
 . now that we have found the lower bound, we dont need to re-compare all of the values and can directly start expanding from the fringe elements
-. in case the palindrome length @ i has exceeded right boundary, then update the center, if not let it stay as what it was already
+. in case the palindrome length @ i has exceeded right boundary, then update the center and the new right boundary, if not let it stay as what it was already
 
+In this code the right boundary is called radius since that alone is enough and we dont really need to keep track of the left boundary.
 '''
 
 
