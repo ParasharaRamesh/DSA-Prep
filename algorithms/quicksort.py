@@ -1,6 +1,5 @@
 from random import *
 
-
 '''
 Boundary partition:
 
@@ -10,7 +9,7 @@ everything to the right of that wall will have elements greater than the pivot
 
 so eventually we will get a state where
 
-[...lesser than equal to pivot](greater than pivot](pivot)
+[...lesser than equal to pivot][...greater than pivot](pivot)
                               b
 
 In the end we just have to put the pivot into place, so we just swap b+1 and pivot.
@@ -42,7 +41,8 @@ def lumato_partition(arr, low, high):
 
 
 '''
-This is a 2 pointer approach where the left pointer keeps moving until we find an element greater than the pivot and the right pointer moves until we find an element lesser than the pivot, 
+This is a 2 pointer approach where the left pointer keeps moving 
+until we find an element greater than the pivot and the right pointer moves until we find an element lesser than the pivot, 
 once we find both if the order of the 2 pointers are still maintained we swap them
 '''
 
