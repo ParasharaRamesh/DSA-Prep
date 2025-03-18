@@ -54,7 +54,7 @@ def topologicalSort(jobs, deps):
     # return final topological sorted result
     return topoSort if not containsCycle else []
 
-# uses heapq and a graph and a reverse graph.. the heap only contains the ones which have an indegree as zero
+# uses heapq and a graph and a reverse graph.. but technically heap is not needed at all since we only store the 0 degree nodes
 def topological_sort(n, edges):
     # Step 1: Build adjacency list and reverse graph (indegree tracking)
     graph = defaultdict(list)  # Normal adjacency list
@@ -64,7 +64,7 @@ def topological_sort(n, edges):
         graph[u].append(v)
         reverse_graph[v].add(u)  # Reverse edges (store parents)
 
-    # Step 2: Use a Min-Heap to store nodes with zero indegree
+    # Step 2: Use a Min-Heap to store nodes with zero indegree ( heap is not needed at all!)
     min_heap = []
     for node in range(n):
         if node not in reverse_graph:  # Nodes with no incoming edges
