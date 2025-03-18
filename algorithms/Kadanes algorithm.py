@@ -20,20 +20,21 @@ def kadanesAlgorithm_sliding_window(nums):
     right = 0  # Right boundary of the sliding window
 
     while right < len(nums):
-        window_sum += nums[right]  # Expand window
+        # 🔹 Grow the window: Expand as much as possible
+        while right < len(nums) and window_sum >= 0:
+            window_sum += nums[right]
+            max_sum = max(max_sum, window_sum)
+            right += 1  # Move right forward
 
-        # Shrink window if sum is negative
-        while window_sum < 0 and left <= right:
+        # 🔹 Shrink the window if sum becomes negative
+        while left < right and window_sum < 0:
             window_sum -= nums[left]  # Remove leftmost element
-            left += 1  # Shrink window from the left
-
-        max_sum = max(max_sum, window_sum)  # Update max sum
-        right += 1  # Expand right boundary
+            left += 1  # Move left boundary forward
 
     return max_sum
 
 if __name__ == '__main__':
     # Example usage:
-    nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-    print(kadanesAlgorithm(nums))  # Output: 6
-    print(max_subarray_sum(nums))  # Output: 6
+    nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4,17,-9,10,1]
+    print(kadanesAlgorithm(nums))
+    print(kadanesAlgorithm_sliding_window(nums))
