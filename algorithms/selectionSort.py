@@ -1,3 +1,7 @@
+'''
+find the minimum from left boundary till end and keep increasing it
+
+'''
 def selectionSort(array):
     n = len(array)
 

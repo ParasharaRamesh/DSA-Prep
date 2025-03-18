@@ -1,5 +1,5 @@
 '''
-assume first element is sorted and repeatedly insert into correct position
+assume first element is sorted and repeatedly insert from beyond left boundary into correct position
 '''
 def insertionSort(array):
     n = len(array)
