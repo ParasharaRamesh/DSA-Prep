@@ -19,6 +19,8 @@ def dijkstrasAlgorithm(start, edges):
         distances[neighbour] = weight
     heapify(edgeQ)
 
+    # could have as well started with (0, source, source) and not added the first edges to reduce the no of lines of this code!
+
     visited.add(start)
     while unvisited:
         if edgeQ:
