@@ -20,24 +20,21 @@ class SCC:
             - now doing a dfs will only yield an scc as we then have to move onto the next in the finishing order
      '''
 
-    def kosaraju(self, adj=None):
-        if adj == None:
-            adj = self.adj
+    def kosaraju(self, graph=None):
+        if graph == None:
+            graph = self.adj
 
         # 1. get the finishing order
-        finished_node_stack = self.get_finish_order_dfs(adj)
+        finished_node_stack = self.get_finish_order_dfs(graph)
 
         # 2. get reversed graph
-        reverse_adj = self.reverse_graph(adj)
+        reversed_graph = self.reverse_graph(graph)
 
         # 3. find scc's
-        sccs = self.find_sccs_using_reverse_graph_dfs(reverse_adj, finished_node_stack)
-        # print(f"sccs are: {scc}")
+        sccs = self.find_sccs_using_reverse_graph_dfs(reversed_graph, finished_node_stack)
+        return sccs
 
-        return len(sccs)
-
-    def get_finish_order_dfs(self, adj):
-        # lets just assume that we start dfs from node #0
+    def get_finish_order_dfs(self, graph):
         visited = set()
         finishing_node_stack = []
 
@@ -46,28 +43,28 @@ class SCC:
             if node not in visited:
                 visited.add(node)
 
-                for neighbor in adj[node]:
+                for neighbor in graph[node]:
                     dfs(neighbor)
 
                 finishing_node_stack.append(node)
 
         # do dfs across all nodes
-        for node in adj.keys():
+        for node in graph.keys():
             dfs(node)
 
         # return the finishing order
         return finishing_node_stack
 
-    def reverse_graph(self, adj):
-        reverse_adj = {k: [] for k in adj}
+    def reverse_graph(self, graph):
+        reversed_graph = {k: [] for k in graph}
 
-        for i, js in adj.items():
+        for i, js in graph.items():
             for j in js:
-                reverse_adj[j].append(i)
+                reversed_graph[j].append(i)
 
-        return reverse_adj
+        return reversed_graph
 
-    def find_sccs_using_reverse_graph_dfs(self, reverse_adj, finished_node_stack):
+    def find_sccs_using_reverse_graph_dfs(self, reversed_graph, finished_node_stack):
         sccs = []  # list of sets of sccs
         processed = set()
 
@@ -79,7 +76,7 @@ class SCC:
                 continue
 
             # find out the scc and add nodes to the processed set
-            scc = self.dfs(node, reverse_adj, processed, [])
+            scc = self.dfs(node, reversed_graph, processed, [])
 
             # add to final list of sccs
             sccs.append(scc)
@@ -87,18 +84,18 @@ class SCC:
         return sccs
 
     # common helpers
-    def dfs(self, node, adj, visited=set(), collect=[]):
+    def dfs(self, node, graph, visited=set(), collector=[]):
         if node not in visited:
             visited.add(node)
-            for neighbor in adj[node]:
+            for neighbor in graph[node]:
                 if neighbor not in visited:
-                    collect = self.dfs(neighbor, adj, visited, collect)
-            collect.append(node)
+                    collector = self.dfs(neighbor, graph, visited, collector)
+            collector.append(node)
 
-        return collect
+        return collector
 
 if __name__ == '__main__':
-    adj = {
+    graph = {
         0: [1],
         1: [2],
         2: [0, 3],
@@ -110,5 +107,5 @@ if __name__ == '__main__':
     }
 
     # 4 sccs are {0,1,2} , {3} , {4,5,6} , {7}
-    scc = SCC(adj)
-    print(scc.kosaraju(adj))
+    scc = SCC(graph)
+    print(scc.kosaraju(graph))
