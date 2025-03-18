@@ -3,6 +3,12 @@ edges is an adjacency list with len(edges) > no of nodes in the graph
 edge[i] -> list of [(j, weight of i-j)...]
 
 return minimum spanning tree
+
+NOTE: This only works on UNDIRECTED GRAPHS!
+
+for directed graph MST there is something called as the Chu Liu Edmonds Maximum Spanning Tree algorithm
+
+
 '''
 
 from collections import defaultdict
