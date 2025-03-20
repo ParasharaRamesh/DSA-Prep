@@ -12,6 +12,13 @@ The cost of a walk starting at node u and ending at node v is defined as the bit
 You are also given a 2D array query, where query[i] = [si, ti]. For each query, you need to find the minimum cost of the walk starting at vertex si and ending at vertex ti. If there exists no such walk, the answer is -1.
 
 Return the array answer, where answer[i] denotes the minimum cost of a walk for query i.
+
+
+Insight:
+> do union find and keep track of components ( do union find by rank for making it faster)
+> for each component find all the edges and take the bitwise and of everything and cache the cost
+> return the cost for that component
+
 '''
 from collections import defaultdict
 from typing import List
