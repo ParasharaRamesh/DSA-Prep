@@ -16,7 +16,8 @@ Return the array answer, where answer[i] denotes the minimum cost of a walk for 
 
 Insight:
 > do union find and keep track of components ( do union find by rank for making it faster)
-> for each component find all the edges and take the bitwise and of everything and cache the cost
+> for each component find all the edges and take the bitwise and of everything and cache the cost.
+> all edges because total walk cost only keeps decreasing as we include more edges and since its undirected more the merrier
 > return the cost for that component
 
 '''
