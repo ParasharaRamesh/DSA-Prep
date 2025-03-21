@@ -30,7 +30,7 @@ class Solution:
         self.time = 0  # Global time counter
         self.disc = [None] * V  # Discovery times
         self.low = [None] * V  # Low-link values
-        self.parent = [None] * V  # Parent array
+        self.parent = [None] * V  # Parent array (look at bridge finding algorithm in case we dont want to use this array at all and just handle it in the function calls directly)
         self.ap = set()  # Store articulation points
 
         # Run DFS for every component
