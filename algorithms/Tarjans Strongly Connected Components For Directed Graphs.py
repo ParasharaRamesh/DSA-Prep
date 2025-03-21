@@ -3,6 +3,8 @@ Video explainer: https://www.youtube.com/watch?v=wUgWX0nc4NY
 Some defintions:
 
 * low link value of a node is the smallest node id reachable from that node when doing a DFS including itself. (i.e. that node is the starting point of the dfs)
+    - However note that , it is initialized to disc which means it is rather a unit of time and not of id.
+    - It represents the smallest discovery time of any reachable ancestor!
 * in some sense all the nodes which have the same low link value belong to the same scc, but this is not entirely accurate as it depends on the traversal order:
     - look at the counter example here -> https://www.youtube.com/watch?v=wUgWX0nc4NY&t=253s
 * so we need to also consider the discovery time of each of the nodes as well and take that into account.
