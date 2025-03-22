@@ -15,8 +15,8 @@ Observations:
     - if disc[u] <= low[v] => u is an articulation point.
     - means that u was discovered a lot earlier than v, and v's lowest link value is greater than disc of u , which means that it cannot have a back edge to u or its ' ancestors
     - why <=, as in why the equals?
-        . because initially disc[u] = low[u] < disc[v] = low[v]
-        . low[v] will become equal to low[u] ( which was already equal to disc[u] if they are connected.
+        . because initially {disc[u] = low[u]} < {disc[v] = low[v]}
+        . low[v] will become equal to low[u] ( which was already equal to disc[u] if they are connected. )
         . The lowest node reachable from v is exactly u, meaning it entirely depends on u for connectivity!!
 4. a node u, after having explored all of its children, might have more than 1 child , and it might also be the root without having any parent.
     - in which case u is also an articulation point as it can be removed to disconnect all of its children
