@@ -1,3 +1,9 @@
+'''
+*was able to do O(N) considering all cases of what happened previously (Apparently the more complex approach)
+* better approach find the peaks first by one traversal and then find the longest among them by starting at the peaks and determining each peak ka length by looking left and right
+* really question the premise of the question and mathematically define the question’s parameters!
+'''
+
 def longestPeak(array):
     '''
     keep going until a peak is reached and monitor the length of the longest peak till then
