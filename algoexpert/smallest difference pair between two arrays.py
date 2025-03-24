@@ -65,9 +65,37 @@ def findMinPossibility(possibilities):
             ans = possibility
     return ans
 
+#2 pointer approach
+def smallest_difference_pair(a, b):
+    # Sort both lists
+    a.sort()
+    b.sort()
+
+    i, j = 0, 0
+    smallest_diff = float('inf')
+    best_pair = None
+
+    # Use two pointers to traverse both lists
+    while i < len(a) and j < len(b):
+        val_a, val_b = a[i], b[j]
+        current_diff = abs(val_a - val_b)
+
+        # Update best_pair if current difference is smaller
+        if current_diff < smallest_diff:
+            smallest_diff = current_diff
+            best_pair = (val_a, val_b)
+
+        # Move the pointer that points to the smaller value
+        if val_a < val_b:
+            i += 1
+        else:
+            j += 1
+
+    return best_pair
 
 if __name__ == '__main__':
     one = [-1, 5, 10, 20, 28, 3]  # -> [-1, 3, 5, 10, 20, 28]
 
     two = [26, 134, 135, 15, 17]  # -> [15, 17, 26, 134, 135]
-    print(smallestDifference(one, two))
+    # print(smallestDifference(one, two))
+    print(smallest_difference_pair(one, two))
