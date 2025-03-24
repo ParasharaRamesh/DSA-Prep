@@ -1,3 +1,5 @@
+# refer to manachers algorithm for O(n) approach
+
 # recursive approach but time limit exceeded!
 def longestCommonSubstring(word1, word2, allCommonSubstrings):
     m = len(word1)

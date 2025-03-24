@@ -25,5 +25,5 @@ def moveElementToEnd(array, toMove):
 
 if __name__ == "__main__":
     array = [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 5, 5, 5, 5, 5, 5]
-    toMove = 5
+    toMove = 4
     print(moveElementToEnd(array, toMove))

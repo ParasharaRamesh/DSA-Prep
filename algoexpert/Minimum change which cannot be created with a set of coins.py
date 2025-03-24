@@ -11,7 +11,7 @@ def nonConstructibleChange(coins):
         if coin > currChangeCreated + 1:
             return currChangeCreated + 1
 
-        #as if coin <= currCHangeCreated+ 1 => change is creatable in range of [currCHange, coin + currChange]
+        #as if coin <= currCHangeCreated+ 1 => change is creatable in range of [currChange, coin + currChange]
         currChangeCreated += coin
 
     return currChangeCreated + 1
