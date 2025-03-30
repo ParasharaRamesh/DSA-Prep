@@ -57,10 +57,11 @@ class Solution:
         '''
         Core idea here is that it is similar to flood fill algorithm, water always moves from lower to higher levels from both ends
 
-        If we know that the left boundary is lesser than right boundary, we dont care about any other max_right in the unexplored middle region which could have been lesser than left!
-        this is because, if at all there was then that would have been processed when coming from the other side as the right boundary should have been smaller initially to let the water flood in, in which case we would have accounted for it in the other end.
-
-        so when left boundary is lesser than right, we move left pointer and vice versa
+        * If we know that the left boundary is lesser than right boundary, we dont care about any other max_right
+           in the unexplored middle region which could have been lesser than left!
+        * this is because, if at all there was then that would have been processed when coming from the other side as the right boundary should have been
+        smaller initially to let the water flood in, in which case we would have accounted for it in the other end.
+        * so when left boundary is lesser than right, we move left pointer and vice versa
         '''
 
         left, right = 0, len(height) - 1
