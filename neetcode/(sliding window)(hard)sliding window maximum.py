@@ -23,6 +23,10 @@ Constraints:
 -1000 <= nums[i] <= 1000
 1 <= k <= nums.length
 
+Insights:
+
+. max heap plus static sliding window
+. throw away anything not in relevant range
 
 '''
 

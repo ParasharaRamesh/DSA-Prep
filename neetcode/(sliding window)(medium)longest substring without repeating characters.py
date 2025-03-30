@@ -28,7 +28,33 @@ s consists of English letters, digits, symbols and spaces.
 
 '''
 
+from collections import defaultdict
+
 
 class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
-        pass
+        if len(s) == 0:
+            return 0
+
+        if len(s) == len(set(s)):
+            return len(s)
+
+        start = 0
+        end = 0
+        longest = 0
+        counts = defaultdict(int)
+
+        while end < len(s):
+            # grow
+            while end < len(s) and counts[s[end]] == 0:
+                counts[s[end]] += 1
+                end += 1
+
+            # assign
+            longest = max(longest, end - start)
+
+            # shrink
+            counts[s[start]] -= 1
+            start += 1
+
+        return longest
