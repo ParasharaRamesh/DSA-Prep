@@ -1,7 +1,7 @@
 '''
 Prerequisite is the articulation points algorithm and its info.
 
-only change here is that it is a strict inequality
+only change here is that it is a strict inequality (disc[u] < low[v])
 . if low[v] == disc[u] => v or its subtree has a back edge to u itself, therefore even if u-v is removed , v's descendants are connected to u and there are no splits
 . therefore low[v] has to be greater than disc[u] that there is no back edge at all
 
