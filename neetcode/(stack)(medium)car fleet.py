@@ -40,8 +40,8 @@ All the values of position are unique.
 
 Insights:
 
-. when visualizing the cars in position only a car from behind can come and join a car ahead and become a fleet => sort position in descending order first
-. have a stack of times and keep adding the times to it
+. when visualizing the cars in position only a car from behind can come and join a car ahead and become a fleet => sort position in descending order first (nlogn time)
+. have a stack of times and keep adding the times to it (n space)
 . if stack[-1] >= time of curr car => the car ahead is taking a lot longer no of steps to reach the target and the car behind just needs fewer number of steps to reach target so it can pretty quickly join it
     - the moment you join just keep the earlier time in the stack as that is the # of time taken by the slowest car in the fleet
 . if stack[-1] < time => the car ahead reaches the target sooner than the cars behind so can treat it as seperate fleets.
