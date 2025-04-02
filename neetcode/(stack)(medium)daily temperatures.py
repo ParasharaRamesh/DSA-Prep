@@ -18,6 +18,8 @@ Constraints:
 1 <= temperatures.length <= 1000.
 1 <= temperatures[i] <= 100
 
+Insights: monotonic stack
+
 '''
 from typing import List
 

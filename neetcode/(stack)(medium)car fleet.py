@@ -37,11 +37,74 @@ n == position.length == speed.length.
 0 < speed[i] <= 100
 0 <= position[i] < target
 All the values of position are unique.
+
+Insights:
+
+. when visualizing the cars in position only a car from behind can come and join a car ahead and become a fleet => sort position in descending order first
+. have a stack of times and keep adding the times to it
+. if stack[-1] >= time of curr car => the car ahead is taking a lot longer no of steps to reach the target and the car behind just needs fewer number of steps to reach target so it can pretty quickly join it
+    - the moment you join just keep the earlier time in the stack as that is the # of time taken by the slowest car in the fleet
+. if stack[-1] < time => the car ahead reaches the target sooner than the cars behind so can treat it as seperate fleets.
+
 '''
 
 from typing import List
 
-#TODO
 class Solution:
     def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
-        pass
+        xv = list(zip(position, speed))
+        xv.sort(reverse=True, key=lambda x: x[0]) # sort on descending position
+
+        fleets = 0
+        time_stack = []
+        for x,v in xv:
+            t = (target - x) / v
+
+            if not time_stack:
+                time_stack.append(t)
+            elif time_stack[-1] >= t:
+                continue # do nothing as the new car will join this fleet.
+            else:
+                time_stack.clear()
+                time_stack.append(t)
+                fleets += 1
+
+        if len(time_stack) > 0:
+            fleets += 1
+
+        return fleets
+
+
+if __name__ == '__main__':
+    s = Solution()
+
+
+    target = 10
+    position = [0,4,2]
+    speed = [2,1,3]
+    res = s.carFleet(target, position, speed)
+    print(res, res == 1)
+
+    target = 12
+    position = [10,8,0,5,3]
+    speed = [2,4,1,1,3]
+    res = s.carFleet(target, position, speed)
+    print(res, res == 3)
+
+    target = 100
+    position = [0,2,4]
+    speed = [4,2,1]
+    res = s.carFleet(target, position, speed)
+    print(res, res == 1)
+
+    target = 10
+    position = [1,4]
+    speed = [3,2]
+    res = s.carFleet(target, position, speed)
+    print(res, res == 1)
+
+    target = 10
+    position = [4,1,0,7]
+    speed = [2,2,1,1]
+    res = s.carFleet(target, position, speed)
+    print(res, res == 3)
