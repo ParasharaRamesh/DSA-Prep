@@ -36,17 +36,62 @@ At most 2 * 105 calls will be made to set and get.
 
 '''
 
+from bisect import bisect_left
+
 
 class TimeMap:
-
     def __init__(self):
-        pass
+        self.map = dict()
 
     def set(self, key: str, value: str, timestamp: int) -> None:
-        pass
+        if key not in self.map:
+            self.map[key] = [(timestamp, value)]
+        else:
+            # put it in the right place (but constraints say that it is strictly increasing so just append)
+            self.map[key].append((timestamp, value))
 
     def get(self, key: str, timestamp: int) -> str:
-        pass
+        if key not in self.map:
+            return ""
+
+        time_values = self.map[key]
+
+        # using classic hardcoded binary search
+        return self.bs_left(time_values, timestamp)
+
+        # using bisect
+        # ind = bisect_left(time_values, timestamp, key= lambda tv: tv[0])
+
+        # if ind == len(time_values):
+        #     return time_values[ind-1][1]
+        # elif time_values[ind][0] == timestamp:
+        #     return time_values[ind][1]
+        # elif ind > 0:
+        #     return time_values[ind-1][1]
+        # else:
+        #     return ""
+
+    def bs_left(self, time_values, timestamp):
+        l = 0
+        r = len(time_values) - 1
+
+        while l <= r:
+            m = (l + r) // 2
+
+            if timestamp <= time_values[m][0]:
+                r = m - 1
+            else:
+                l = m + 1
+
+        if 0 <= l < len(time_values) and timestamp == time_values[l][0]:
+            #if l in range then choose this
+            return time_values[l][1]
+        elif 0 <= r < len(time_values):
+            # if r in range
+            return time_values[r][1]
+        else:
+            return ""
+
 
 # Your TimeMap object will be instantiated and called as such:
 # obj = TimeMap()
