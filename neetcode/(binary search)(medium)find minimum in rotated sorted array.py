@@ -36,6 +36,23 @@ from typing import List
 
 
 class Solution:
+    #simpler
+    def findMin(self, nums: List[int]) -> int:
+        l = 0
+        r = len(nums) - 1
+
+        if nums[l] <= nums[r]:
+            return nums[l]
+
+        while l < r:
+            m = (l + r) // 2
+            if nums[l] < nums[m]:
+                l = m + 1 if nums[m] < nums[m + 1] else m
+            elif nums[l] >= nums[m]:
+                r = m - 1 if nums[m - 1] < nums[m] else m
+
+        return nums[l+1]
+
     def findMin(self, nums: List[int]) -> int:
         l = 0
         r = len(nums) - 1
