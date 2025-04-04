@@ -34,6 +34,22 @@ class ListNode:
         self.next = next
 
 class Solution:
+    def removeNthFromEnd_sentinel_two_pointers(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        sent = ListNode(0, head)
+        left = sent
+        right = head
+
+        while n > 0:
+            right = right.next
+            n -= 1
+
+        while right:
+            left = left.next
+            right = right.next
+
+        left.next = left.next.next
+        return sent.next
+
     def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
         N = 0
         curr = head
