@@ -17,6 +17,8 @@ All ways to detect cycles:
         - if it is topologically sortable then it has no cycles
     b. BFS/DFS with explicit q/stack
         - just have extra memory space for all the nodes and keep track of whether it is in the stack at any point of time or not
+    c. Linked list:
+        - tortoise hare algorithm
 '''
 
 
