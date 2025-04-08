@@ -11,6 +11,8 @@ General idea:
 '''
 
 from collections import defaultdict
+
+
 # Example 1. Inorder traversal
 class Node:
     def __init__(self, val):
@@ -88,6 +90,9 @@ def fib_iterative_with_parent(n):
       - 'frame_result': stores the computed result for this frame; for Fibonacci, once
                         fib(n-1) returns, it is stored here; when fib(n-2) returns, we update
                         frame_result with the sum of these two values.
+
+    This design for a frame is the most generic one for any recursive code.
+
     """
     # Create the initial (root) frame.
     root_frame = {
