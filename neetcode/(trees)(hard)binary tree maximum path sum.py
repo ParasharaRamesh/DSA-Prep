@@ -107,3 +107,31 @@ class Solution:
 
         helper(root)
         return max_sum
+
+    # same O(n) solution but more easier to reason about / read
+    def maxPathSum_optimal(self, root: Optional[TreeNode]) -> int:
+        max_sum = float("-inf")
+
+        def helper(node):
+            nonlocal max_sum
+
+            if not node:
+                return 0
+
+            left_max = helper(node.left)
+            right_max = helper(node.right)
+
+            # this is to consider all paths passing through node
+            max_sum = max(
+                max_sum,
+                node.val,
+                left_max + node.val,
+                node.val + right_max,
+                left_max + node.val + right_max
+            )
+
+            # max with only one of it, because this is the value considering that we keep one end as 'node' and we continue downwards to the best path & we might not choose either path also in which case we also add '0' as one of the options to max with
+            return node.val + max(0, left_max, right_max)
+
+        helper(root)
+        return max_sum
