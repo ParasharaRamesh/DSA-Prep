@@ -43,11 +43,6 @@ class Solution:
         if len(preorder) == 0:
             return None
 
-        # base case , both have just 1 node
-        if len(preorder) == 1:
-            return TreeNode(preorder[0])
-
-
         # find out where the root node exists in the inorder
         try:
             root = TreeNode(preorder[0])
