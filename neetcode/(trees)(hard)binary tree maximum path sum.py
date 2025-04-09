@@ -38,6 +38,46 @@ class TreeNode:
         self.left = left
         self.right = right
 
+
 class Solution:
+    def get_max_path_sum(self, node):
+        paths = []
+
+        def helper(node, curr_path):
+            if not node:
+                return
+
+            paths.append(sum(curr_path + [node.val]))
+
+            if node.left:
+                helper(node.left, curr_path + [node.val])
+
+            if node.right:
+                helper(node.right, curr_path + [node.val])
+
+        helper(node, [])
+        return max(paths)
+
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        pass
+        if not root:
+            return float("-inf")
+
+        if not root.left and not root.right:
+            return root.val
+
+        left_max_path_sum = float("-inf")
+        right_max_path_sum = float("-inf")
+
+        if root.left:
+            left_max_path_sum = self.get_max_path_sum(root.left)
+
+        if root.right:
+            right_max_path_sum = self.get_max_path_sum(root.right)
+
+        max_sum_with_root = max(
+            root.val,
+            left_max_path_sum + root.val,
+            root.val + right_max_path_sum,
+            left_max_path_sum + root.val + right_max_path_sum
+        )
+        return max(max_sum_with_root, self.maxPathSum(root.left), self.maxPathSum(root.right))
