@@ -39,6 +39,7 @@ class TreeNode:
         self.right = right
 
 
+
 class Solution:
     def get_max_path_sum(self, node):
         paths = []
@@ -58,7 +59,8 @@ class Solution:
         helper(node, [])
         return max(paths)
 
-    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+    # TLE :(
+    def maxPathSum_tle(self, root: Optional[TreeNode]) -> int:
         if not root:
             return float("-inf")
 
@@ -81,3 +83,27 @@ class Solution:
             left_max_path_sum + root.val + right_max_path_sum
         )
         return max(max_sum_with_root, self.maxPathSum(root.left), self.maxPathSum(root.right))
+
+    # Optimal O(n) solution !
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        max_sum = float("-inf")
+
+        def helper(node):
+            # we use nonlocal whenever we want to update a variable inside a nested function.
+            nonlocal max_sum
+
+            if not node:
+                return 0
+
+            # take max with 0, because the path sum can be negative
+            left_max = max(helper(node.left), 0)
+            right_max = max(helper(node.right), 0)
+
+            # this is to consider all paths passing through node
+            max_sum = max(max_sum, left_max + node.val + right_max)
+
+            #max with only one of it, because this is the value considering that we keep one end as 'node'and we continue downwards to the best path
+            return node.val + max(left_max, right_max)
+
+        helper(root)
+        return max_sum
