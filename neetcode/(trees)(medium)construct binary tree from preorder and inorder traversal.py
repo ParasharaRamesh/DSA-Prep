@@ -23,6 +23,7 @@ Constraints:
 1 <= inorder.length <= 1000.
 inorder.length == preorder.length
 -1000 <= preorder[i], inorder[i] <= 1000
+unique values
 
 '''
 from typing import Optional, List
@@ -34,6 +35,37 @@ class TreeNode:
         self.left = left
         self.right = right
 
+
 class Solution:
+    # inorder = LTR, preorder = TLR
     def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
-        pass
+        # base case
+        if len(preorder) == 0:
+            return None
+
+        # base case , both have just 1 node
+        if len(preorder) == 1:
+            return TreeNode(preorder[0])
+
+
+        # find out where the root node exists in the inorder
+        try:
+            root = TreeNode(preorder[0])
+
+            root_index = inorder.index(preorder[0])
+
+            left_size = root_index # number of elements in the left subtree
+
+            # build left
+            left = self.buildTree(preorder[1: left_size + 1], inorder[:root_index]) # for preorder you know it starts from 1 since the root is the 0th index
+
+            # build right
+            right = self.buildTree(preorder[left_size + 1:], inorder[root_index + 1:])
+
+            root.left = left
+            root.right = right
+
+            return root
+        except ValueError:
+            print(f"problem with index {preorder[0]}")
+            exit(0)
