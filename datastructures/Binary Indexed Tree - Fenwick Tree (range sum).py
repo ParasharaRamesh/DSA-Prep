@@ -10,7 +10,7 @@ Binary Indexed Tree (Fenwick Tree):
     * x & -x => returns the first set bit (000...10000.)
     * doing x - (x&-x) => removes the first set bit from x (e.g. in 13 -> 1101 it will become 1100)
     * same can also be achieved by doing x & (x-1)
-* BIT[i] = stores partial range answer from [j+1 -> i] where j = i&(i-1) {j is the binary number i but with the right most set bit removed)
+* BIT[i] = stores partial range answer from [j+1 -> i] where j = i&(i-1) (or) i - (i&-i) {j is the binary number i but with the right most set bit removed)
 
 * lets say we need the sum of the first 10 elements, we can refer to the BIT array which was already constructed
 BIT[10] => 0b1010 => [1000 + 1 -> 1010] => sum from [9,10]
@@ -39,7 +39,7 @@ add last set bit
 class BIT:
     def __init__(self, arr):
         self.arr = arr
-        self.bit = [0] * (len(arr) + 1)  # 1 based indexing so we need n+1 size
+        self.bit = [0] * (len(arr) + 1)  # 1 based indexing so we need n+1 size, 0th index doesn't matter / is useless in this case
 
         # constructing the BIT
         for i, x in enumerate(arr):

@@ -36,8 +36,8 @@ class Solution:
                 self.dfs(v, u, adj)  # DFS on child
                 self.low[u] = min(self.low[u], self.low[v])
 
-                # Bridge condition
-                if self.low[v] > self.disc[u]:
+                # Bridge condition (strict inequality)
+                if self.disc[u] < self.low[v]:
                     self.bridges.append([u, v])
 
             else:  # Back edge case
