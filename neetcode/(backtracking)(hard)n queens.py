@@ -24,8 +24,97 @@ Constraints:
 1 <= n <= 9
 '''
 from typing import List
-
+from collections import defaultdict
+from copy import deepcopy
 
 class Solution:
     def solveNQueens(self, n: int) -> List[List[str]]:
-        pass
+        res = set()
+        board = [["."] * n for i in range(n)]
+
+        res = list(self.try_placing(0, board, res, 0))
+        res = list(map(lambda x: list(x),res))
+        return [["".join(row) for row in board] for board in res]
+
+    #also check partial boards
+    def is_valid_board(self, board, num_q) -> bool:
+        n = len(board)
+
+        q_positions = []
+
+        diagonals = defaultdict(list)
+        other_diagonals = defaultdict(list)
+
+        for i in range(n):
+            for j in range(n):
+                char = board[i][j]
+
+                diagonals[j-i].append(char)
+                other_diagonals[i+j].append(char)
+
+                if char == 'Q':
+                    q_positions.append((i, j))
+
+        if len(q_positions) != num_q:
+            return False
+        elif num_q == 0:
+            return True
+
+        for pos in q_positions:
+            r, c = pos
+
+            # check that row 'r'
+            row = board[r]
+            row_count = row.count('Q')
+            if row_count > 1:
+                return False
+
+            # check that col 'c'
+            col = ''
+            for board_row in board:
+                col += board_row[c]
+
+            col_count = col.count('Q')
+            if col_count > 1:
+                return False
+
+            # check primary diagonal
+            diag = diagonals[c-r]
+            dig_count = diag.count('Q')
+            if dig_count > 1:
+                return False
+
+            #check other diagonal
+            other_diag = other_diagonals[c+r]
+            other_dig_count = other_diag.count('Q')
+            if other_dig_count > 1:
+                return False
+
+        return True
+
+    def try_placing(self, row, board, res, num_placed):
+        if row == len(board) and self.is_valid_board(board, len(board)):
+            board_copy = deepcopy(board)
+            board_copy = tuple(map(lambda x: tuple(x), board_copy))
+            res.add(board_copy)
+            return res
+        elif not self.is_valid_board(board, num_placed) or row == len(board):
+            return res
+
+        # try to place it in the jth column of that "row" and proceed from there.
+        for j in range(len(board)):
+            if board[row][j] == ".":
+                #placed it
+                board[row][j] = "Q"
+
+                #go down the recursion hierarchy
+                res = self.try_placing(row + 1, board, res, num_placed + 1)
+
+                #remove it if it wasnt valid
+                board[row][j] = "."
+
+        return res
+
+if __name__ == '__main__':
+    s = Solution()
+    print(s.solveNQueens(4))
