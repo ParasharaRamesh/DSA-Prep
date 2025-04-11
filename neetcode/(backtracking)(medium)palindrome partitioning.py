@@ -52,8 +52,6 @@ class Solution:
                 part = s[:i]
                 rest = s[i:]
 
-                # print(f"part {part}, rest {rest}")
-
                 if self.is_palindrome(part):
                     helper(rest, splits + [part])
 
