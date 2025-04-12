@@ -27,7 +27,9 @@ newInterval.length == intervals[i].length == 2
 
 '''
 
+from typing import List
 from bisect import *
+from functools import reduce
 
 
 class Solution:
@@ -88,3 +90,17 @@ class Solution:
         print(f'i : {i}, j: {j}, left untouched: {l_u}, right untouched: {r_u}')
 
         return l_u + self.merge(intervals, i, j, newInterval) + r_u
+
+    # cleaner solution
+    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:
+        def try_merging(merged_intervals, interval):
+            if not merged_intervals or merged_intervals[-1][1] < interval[0]:
+                merged_intervals.append(interval)
+            else:
+                merged_intervals[-1][1] = max(merged_intervals[-1][1], interval[1])
+            return merged_intervals
+
+        i = bisect_left(intervals, newInterval[0], key=lambda interval: interval[0])
+        intervals.insert(i, newInterval)
+
+        return list(reduce(try_merging, intervals, []))
