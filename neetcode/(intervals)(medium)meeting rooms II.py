@@ -83,8 +83,8 @@ class Solution:
 
         return days
 
-    # optimal way to do it, sort both by start and end times, and increment count when meeting is on and decrement count when a meeting is over
-    def minMeetingRooms(self, intervals: List[Interval]) -> int:
+    # optimal way to do it, sort both by start and end times, and increment count when meeting is on and decrement count when a meeting is over, can technically use a minheap instead of the sorted end array also
+    def minMeetingRooms_sorting_two_pointers(self, intervals: List[Interval]) -> int:
         start = sorted([i.start for i in intervals])
         end = sorted([i.end for i in intervals])
 
@@ -99,6 +99,9 @@ class Solution:
                 count -= 1
             res = max(res, count)
         return res
+
+    # Scan line variant
+
 
 if __name__ == '__main__':
     s = Solution()
