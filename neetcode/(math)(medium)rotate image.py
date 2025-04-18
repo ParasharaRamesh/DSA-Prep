@@ -42,4 +42,52 @@ from typing import List
 
 class Solution:
     def rotate(self, matrix: List[List[int]]) -> None:
-        pass
+        n = len(matrix)
+
+        # reverse everything in place, go through each row
+        for i in range(n):
+            matrix[i] = matrix[i][::-1]
+
+        # swap all the ones on the other side of the secondary diagonal
+        for i in range(n):
+            for j in range(n):
+                if i + j < n - 1:
+                    o_i, o_j = n - 1 - j, n - 1 - i
+                    matrix[i][j], matrix[o_i][o_j] = matrix[o_i][o_j], matrix[i][j]
+
+        print(matrix)
+
+
+if __name__ == '__main__':
+    s = Solution()
+
+    matrix = [
+        [1, 2],
+        [3, 4]
+    ]
+    expected = [
+        [3, 1],
+        [4, 2]
+    ]
+    s.rotate(matrix)
+
+    matrix = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ]
+    Output: [
+        [7, 4, 1],
+        [8, 5, 2],
+        [9, 6, 3]
+    ]
+    s.rotate(matrix)
+
+    matrix = [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 12],
+        [13, 14, 15, 16]
+    ]
+
+    s.rotate(matrix)
