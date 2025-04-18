@@ -34,15 +34,26 @@ point.length == 2
 0 <= x, y <= 1000
 '''
 from typing import List
+from collections import defaultdict
 
 
-class CountSquares:
-
+class DetectSquares:
     def __init__(self):
-        pass
+        self.pt_count = defaultdict(int)
+        self.pts = []
 
     def add(self, point: List[int]) -> None:
-        pass
+        self.pts.append(point)
+        self.pt_count[tuple(point)] += 1
 
     def count(self, point: List[int]) -> int:
-        pass
+        res = 0
+        x, y = point
+
+        for ox, oy in self.pts:
+            if (abs(ox - x) != abs(oy - y)) or x == ox or y == oy:
+                continue
+
+            res += self.pt_count[(x, oy)] * self.pt_count[(ox, y)]
+
+        return res
