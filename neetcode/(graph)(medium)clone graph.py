@@ -95,3 +95,19 @@ class Solution:
             return nodes[1] if 1 in nodes else None
 
         return deep_copy()
+
+    #elegant solution
+    def cloneGraph_nc(self, node: Optional['Node']) -> Optional['Node']:
+        oldToNew = {}
+
+        def dfs(node):
+            if node in oldToNew:
+                return oldToNew[node]
+
+            copy = Node(node.val)
+            oldToNew[node] = copy
+            for nei in node.neighbors:
+                copy.neighbors.append(dfs(nei))
+            return copy
+
+        return dfs(node) if node else None
