@@ -59,4 +59,39 @@ class Node:
 
 class Solution:
     def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
-        pass
+        adj = dict()
+
+        # lets not do bidirected adj
+        def build_adj(node):
+            nonlocal adj
+
+            if not node:
+                return
+
+            if node.val in adj:
+                # skip it
+                return
+
+            adj[node.val] = [neigh.val for neigh in node.neighbors]
+
+            for neigh in node.neighbors:
+                build_adj(neigh)
+
+        build_adj(node)
+
+        def deep_copy():
+            nodes = dict()
+
+            # creating a ref for that node
+            for node_val in adj:
+                nodes[node_val] = Node(node_val)
+
+            # go through again
+            for node_val, neighbors in adj.items():
+                for neigh_val in neighbors:
+                    neigh_node = nodes[neigh_val]
+                    nodes[node_val].neighbors.append(neigh_node)
+
+            return nodes[1] if 1 in nodes else None
+
+        return deep_copy()
