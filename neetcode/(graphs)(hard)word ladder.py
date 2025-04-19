@@ -27,6 +27,7 @@ Constraints:
 1 <= wordList.length <= 100
 
 '''
+from typing import List
 
 
 class Solution:
