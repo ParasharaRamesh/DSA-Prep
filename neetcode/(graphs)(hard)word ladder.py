@@ -28,8 +28,56 @@ Constraints:
 
 '''
 from typing import List
+from collections import deque
 
 
 class Solution:
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
-        pass
+        # trivial case endWord not in wordList
+        if endWord not in wordList:
+            return 0
+
+        # construct graph
+        wordList.append(beginWord)
+        graph = {word: [] for word in wordList}
+
+        for i in range(len(wordList)-1):
+            for j in range(i+1, len(wordList)):
+                word1 = wordList[i]
+                word2 = wordList[j]
+
+                edit_distance = 0
+                for c1, c2 in zip(word1, word2):
+                    if c1 != c2:
+                        edit_distance += 1
+
+                if edit_distance == 1:
+                    graph[word1].append(word2)
+                    graph[word2].append(word1)
+
+        # do bfs (there might other disconnected components)
+        # ladder_length = float("inf")
+        ladder_length = 0
+        found = False
+        visited = set()
+
+        frontier = deque([(beginWord, 1)])
+
+        while frontier:
+            curr_word, count = frontier.popleft()
+
+            if curr_word not in visited:
+                visited.add(curr_word)
+
+            #found it: the first time we find it will be the shortest anyway because of bfs
+            if curr_word == endWord:
+                found = True
+                # ladder_length = min(ladder_length, count)
+                ladder_length = count
+                break
+
+            for neighbour in graph[curr_word]:
+                if neighbour not in visited:
+                    frontier.append((neighbour, count + 1))
+
+        return ladder_length if found else 0
