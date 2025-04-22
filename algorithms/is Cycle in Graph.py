@@ -1,7 +1,7 @@
 '''
 All ways to detect cycles:
 
-* inefficient way is to keep track of the ancestory of nodes travelled as a path list for each node
+0. inefficient way is to keep track of the ancestry of nodes travelled as a path list for each node
 1. Undirected graphs:
     a. Union Find:
         - Use union find and as we are doing union, if they belong to the same component already then that means that there is a cycle
@@ -21,7 +21,44 @@ All ways to detect cycles:
         - tortoise hare algorithm
 '''
 
+# 0. inefficient, keeping track of whole history/path to reach node
+def cycleInGraph(edges):
+    visited = set()
+    unvisited = set(list(range(len(edges))))
+    frontier = [(0,[0])] #item, ancestor at that point
 
+    while unvisited:
+        curr = None
+        ancestor = []
+
+        if frontier:
+            curr, ancestor = frontier.pop()
+        else:
+            #remove whatever was visited
+            unvisited = unvisited - visited
+
+            if unvisited:
+                #if any is left pop it and use that!
+                curr = unvisited.pop()
+                ancestor = [curr]
+            else:
+                continue
+
+        visited.add(curr)
+
+        for neighbour in edges[curr]:
+            if neighbour in ancestor:
+                return True
+
+            if neighbour not in visited:
+                frontier.append((neighbour, ancestor + [neighbour]))
+
+    return False
+
+
+# 1. Undirected graphs
+
+# 1.a union find
 class UnionFind:
     def __init__(self):
         self.parent = dict()
@@ -88,40 +125,7 @@ def is_cyclic_undirected(graph, n):
     return False
 
 
-#approach 1 using dfs/bfs or use topological sort
-def cycleInGraph(edges):
-    visited = set()
-    unvisited = set(list(range(len(edges))))
-    frontier = [(0,[0])] #item, ancestor at that point
-
-    while unvisited:
-        curr = None
-        ancestor = []
-
-        if frontier:
-            curr, ancestor = frontier.pop()
-        else:
-            #remove whatever was visited
-            unvisited = unvisited - visited
-
-            if unvisited:
-                #if any is left pop it and use that!
-                curr = unvisited.pop()
-                ancestor = [curr]
-            else:
-                continue
-
-        visited.add(curr)
-
-        for neighbour in edges[curr]:
-            if neighbour in ancestor:
-                return True
-
-            if neighbour not in visited:
-                frontier.append((neighbour, ancestor + [neighbour]))
-
-    return False
-
+# 1.b parent tracking, anything visited which is not the immediate parent => there is a back-edge i.e. there is a cycle
 
 def is_cyclic_undirected(graph, n):
     visited = [False] * n
@@ -146,7 +150,8 @@ def is_cyclic_undirected(graph, n):
 
     return False
 
-
+# 1.c  & 2.b using explicit stack.
+# NOTE: For tortoise and hare look at linked lists & for topological sort search for that separately.
 def is_cyclic_directed(graph, n):
     visited = [False] * n
     stack = [False] * n  # Track nodes in the current DFS path
