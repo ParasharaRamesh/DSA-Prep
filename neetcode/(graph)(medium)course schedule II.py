@@ -32,4 +32,44 @@ from typing import List
 
 class Solution:
     def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
-        pass
+        graph = {i: set() for i in range(numCourses)}
+        for j, i in prerequisites:
+            graph[i].add(j)
+
+        topo_order = []
+
+        # do topological sorting
+        while len(topo_order) < numCourses:
+            # find nodes with zero indegree
+            reverse_graph = {}
+
+            for i in graph:
+                if i not in reverse_graph:
+                    reverse_graph[i] = set()
+
+                neighbours = graph[i]
+                for neighbour in neighbours:
+                    if neighbour not in reverse_graph:
+                        reverse_graph[neighbour] = {i}
+                    else:
+                        reverse_graph[neighbour].add(i)
+
+            zero_node = None
+            for i in reverse_graph:
+                if len(reverse_graph[i]) == 0:
+                    zero_node = i
+                    break
+
+            if zero_node == None:
+                return []
+
+            # remove that node from the graph
+            for node in graph:
+                if zero_node in graph[node]:
+                    graph[node].remove(zero_node)
+            del graph[zero_node]
+
+            # add to topo_order
+            topo_order.append(zero_node)
+
+        return topo_order
