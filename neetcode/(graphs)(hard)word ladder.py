@@ -55,10 +55,7 @@ class Solution:
                     graph[word1].append(word2)
                     graph[word2].append(word1)
 
-        # do bfs (there might other disconnected components)
-        # ladder_length = float("inf")
-        ladder_length = 0
-        found = False
+        # do bfs
         visited = set()
 
         frontier = deque([(beginWord, 1)])
@@ -71,13 +68,11 @@ class Solution:
 
             #found it: the first time we find it will be the shortest anyway because of bfs
             if curr_word == endWord:
-                found = True
-                # ladder_length = min(ladder_length, count)
-                ladder_length = count
-                break
+                return count
 
             for neighbour in graph[curr_word]:
                 if neighbour not in visited:
                     frontier.append((neighbour, count + 1))
 
-        return ladder_length if found else 0
+        # if not found return 0
+        return 0
