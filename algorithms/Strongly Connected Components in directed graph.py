@@ -66,17 +66,17 @@ class SCC:
 
     def find_sccs_using_reverse_graph_dfs(self, reversed_graph, finished_node_stack):
         sccs = []  # list of sets of sccs
-        processed = set()
+        visited = set()
 
         while finished_node_stack:
             node = finished_node_stack.pop()
 
-            # skip if already processed
-            if node in processed:
+            # skip if already visited
+            if node in visited:
                 continue
 
-            # find out the scc and add nodes to the processed set
-            scc = self.dfs(node, reversed_graph, processed, [])
+            # find out the scc and add nodes to the visited set
+            scc = self.dfs(node, reversed_graph, visited, [])
 
             # add to final list of sccs
             sccs.append(scc)

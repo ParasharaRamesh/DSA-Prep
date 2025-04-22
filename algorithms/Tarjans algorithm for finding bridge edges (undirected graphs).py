@@ -1,4 +1,6 @@
 '''
+* * NOTE: this concept of articulation points and bridges is only well defined for undidrected graphs!!
+
 Prerequisite is the articulation points algorithm and its info.
 
 only change here is that it is a strict inequality (disc[u] < low[v])

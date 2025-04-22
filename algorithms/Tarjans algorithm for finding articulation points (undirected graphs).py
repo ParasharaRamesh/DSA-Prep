@@ -1,4 +1,6 @@
 '''
+* NOTE: this concept of articulation points and bridges is only well defined for undidrected graphs!
+
 * Articulation points are those vertices which when removed from the graph splits it into 2 or more connected components.
 * NOTE: in case we are finding articulation points in directed graphs then we can find the articulation points using the same logic as the SCC roots.
     - there are some SCC roots (U) which have incoming edges from nodes belonging to another SCC (V).
