@@ -27,8 +27,46 @@ Constraints:
 
 '''
 from typing import List
+from collections import defaultdict
 
 
 class Solution:
     def validTree(self, n: int, edges: List[List[int]]) -> bool:
-        pass
+        # basic check for a tree
+        if len(edges) != n - 1:
+            return False
+
+        # trivial case with one node
+        if len(edges) == 0 and n == 1:
+            return True
+
+        # check if there is a cycle, if not then it is a valid tree
+        def dfs(node, parent, visited):
+            if node in visited:
+                return True
+
+            visited.add(node)
+            for neighbor in graph[node]:
+                if neighbor in visited and neighbor != parent:
+                    return False
+
+                if neighbor not in visited:
+                    res = dfs(neighbor, node, visited)
+                    if not res:
+                        return False
+
+            return True
+
+        # construct adjacency graph
+        graph = defaultdict(list)
+        for i, j in edges:
+            graph[i].append(j)
+            graph[j].append(i)
+
+        # do dfs from somewhere
+        visited = set()
+        for i in range(n):
+            if not dfs(i, None, visited):
+                return False
+        return True
+
