@@ -38,8 +38,58 @@ grid.length == grid[i].length
 
 '''
 from typing import List
+from heapq import *
 
 
 class Solution:
     def swimInWater(self, grid: List[List[int]]) -> int:
-        pass
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        n = len(grid)
+
+        # since we know that these two spots are there for sure
+        height = max(grid[0][0], grid[n - 1][n - 1])
+
+        frontier = [(grid[0][0], (0, 0))]
+        visited = set()
+
+        while frontier:
+            curr_height, coords = heappop(frontier)
+            i, j = coords
+
+            if coords in visited:
+                continue
+
+            height = max(height, curr_height)
+            visited.add(coords)
+
+            if coords == (n - 1, n - 1):
+                break
+
+            for di, dj in directions:
+                ni, nj = i + di, j + dj
+                if 0 <= ni < n and 0 <= nj < n and (ni, nj) not in visited:
+                    heappush(frontier, (grid[ni][nj], (ni, nj)))
+
+        return height
+
+if __name__ == '__main__':
+    s = Solution()
+
+    grid = [
+        [0,2],
+        [1,3]
+    ]
+    expected = 3
+    res = s.swimInWater(grid)
+    assert res == expected, f"expected: {expected}, res: {res}"
+
+    grid = [
+        [0,1,2,3,4],
+        [24,23,22,21,5],
+        [12,13,14,15,16],
+        [11,17,18,19,20],
+        [10,9,8,7,6]
+    ]
+    expected = 16
+    res = s.swimInWater(grid)
+    assert res == expected, f"expected: {expected}, res: {res}"
