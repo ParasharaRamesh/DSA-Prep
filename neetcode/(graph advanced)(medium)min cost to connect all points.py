@@ -18,8 +18,46 @@ Constraints:
 -1000 <= xi, yi <= 1000
 '''
 from typing import List
-
+from collections import defaultdict
+from heapq import *
 
 class Solution:
     def minCostConnectPoints(self, points: List[List[int]]) -> int:
-        pass
+        # construct graph
+        graph = defaultdict(list)
+        manhattan_distance = lambda p1, p2: abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+        for i in range(len(points) - 1):
+            for j in range(i + 1, len(points)):
+                point1 = points[i]
+                point2 = points[j]
+                distance = manhattan_distance(point1, point2)
+                graph[tuple(point1)].append((tuple(point2), distance))
+                graph[tuple(point2)].append((tuple(point1), distance))
+
+        # construct min spanning tree and calculate cost
+        src = tuple(points[0])
+        visited = {src}
+        frontier = [(d, src, j) for j, d in graph[src]]
+        heapify(frontier)
+
+        cost = 0
+        # mst = []
+        while frontier:
+            d_ij, i, j = heappop(frontier)
+
+            if j not in visited:
+                visited.add(j)
+                # mst.append((d_ij, i, j))
+                cost += d_ij
+
+                for k, d_kj in graph[j]:
+                    if k not in visited:
+                        heappush(frontier, (d_kj, j, k))
+
+        return cost
+
+if __name__ == '__main__':
+    s = Solution()
+    points = [[0, 0], [2, 2], [3, 3], [2, 4], [4, 2]]
+    print(s.minCostConnectPoints(points))#10
