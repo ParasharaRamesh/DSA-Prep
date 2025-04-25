@@ -48,16 +48,16 @@ after k hops ( after considering all other k hop edge distances from src )
 '''
 def bellman_ford_k_hops(graph, V, source, k):
     dist = [float('inf')] * V
-    dist[source] = 0
+    dist[source] = 0 # as in old_dist
 
     for _ in range(k):
         # in this particular pass, new_dist is the one which will be updated using the old value from the previous pass i.e. from dist
-        new_dist = dist.copy()
+        curr_dist = dist.copy()
         for u, v, weight in graph:
             # use old value (u) -> to update -> potential new value of v.
-            if dist[u] != float('inf') and dist[u] + weight < new_dist[v]:
-                new_dist[v] = dist[u] + weight
+            if dist[u] != float('inf') and dist[u] + weight < curr_dist[v]:
+                curr_dist[v] = dist[u] + weight
         # update the old dist with the new dist, so that in the next pass, dist will have the updated values from this kth pass distances ( i.e. new_dist )
-        dist = new_dist
+        dist = curr_dist
 
     return dist
