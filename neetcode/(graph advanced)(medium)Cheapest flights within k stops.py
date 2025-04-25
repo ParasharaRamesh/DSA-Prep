@@ -12,7 +12,7 @@ import heapq
 ''' 
 dijkstra works but need to keep prices for each number of stops instead, because for a certain number of stops say (k), we usually see one node only once.. but we could have different prices for the same node with different number of stops. 
 so we have a multidimensional prices array, one for each number of stops. 
-This can lead to incorrect results when a node is revisited with a different number of stops than the one that was previously processed.
+If we had a singular prices array and kept updating that , it could have lead to incorrect results when a node is revisited with a different number of stops than the one that was previously processed.
 '''
 
 class Solution_dijkstra:
