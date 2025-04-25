@@ -5,38 +5,100 @@ There are n cities connected by some number of flights. You are given an array f
 
 You are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. If there is no such route, return -1.
 '''
-from collections import defaultdict
+from collections import defaultdict, deque
 from typing import List
 import heapq
 
+''' 
+dijkstra works but need to keep prices for each number of stops instead, because for a certain number of stops say (k), we usually see one node only once.. but we could have different prices for the same node with different number of stops. 
+so we have a multidimensional prices array, one for each number of stops. 
+This can lead to incorrect results when a node is revisited with a different number of stops than the one that was previously processed.
+'''
 
-class Solution:
+class Solution_dijkstra:
     def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
-        INF = float("inf")
+        # Initialize the prices dictionary manually
+        prices = {}
+        for i in range(n):
+            prices[i] = {}
+            for j in range(k + 1):
+                prices[i][j] = float("inf")  # Initialize each stop count with inf
+        prices[src][0] = 0  # Starting node with 0 cost at 0 stops
+
+        # Create adjacency list using a dictionary: {node: [(neighbor, cost), ...]}
+        adj = {}
+        for i in range(n):
+            adj[i] = []
+        for u, v, cst in flights:
+            adj[u].append((v, cst))
+
+        # Min-heap for Dijkstra-like approach
+        q = [(0, src, 0)]  # (cost, node, stops)
+
+        while q:
+            cst, node, stops = heapq.heappop(q)
+
+            if stops > k:
+                continue
+
+            for nei, w in adj[node]:
+                nextCost = cst + w
+                # Check if it's cheaper to go via 'nei' with 'stops + 1'
+                if nextCost < prices[nei].get(stops + 1, float("inf")):  # Using get() to avoid KeyError
+                    prices[nei][stops + 1] = nextCost
+                    heapq.heappush(q, (nextCost, nei, stops + 1))
+
+        # Return the minimum cost to reach the destination with <= k stops
+        answer = min(prices[dst].values())
+        return answer if answer != float("inf") else -1
+
+
+# using BFS: along with each node keep track of the number of steps taken to reach there and ignore anything which is greater
+class Solution_BFS:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        prices = [float("inf")] * n
+        prices[src] = 0
         adj = [[] for _ in range(n)]
-        dist = [[INF] * (k + 5) for _ in range(n)]
         for u, v, cst in flights:
             adj[u].append([v, cst])
 
-        dist[src][0] = 0
-        minHeap = [(0, src, -1)]  # cost, node, stops
-        while len(minHeap):
-            cst, node, stops = heapq.heappop(minHeap)
-            if dst == node: return cst
-            if stops == k or dist[node][stops + 1] < cst:
+        q = deque([(0, src, 0)])
+        while q:
+            cst, node, stops = q.popleft()
+            if stops > k:
                 continue
-            for nei, w in adj[node]:
-                nextCst = cst + w
-                nextStops = 1 + stops
-                if dist[nei][nextStops + 1] > nextCst:
-                    dist[nei][nextStops + 1] = nextCst
-                    heapq.heappush(minHeap, (nextCst, nei, nextStops))
 
-        return -1
+            for nei, w in adj[node]:
+                nextCost = cst + w
+                if nextCost < prices[nei]:
+                    prices[nei] = nextCost
+                    q.append((nextCost, nei, stops + 1))
+
+        return prices[dst] if prices[dst] != float("inf") else -1
+
+
+#bellman ford using the k shortest constraing property
+
+class Solution_Bellmanford:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        prices = [float("inf")] * n
+        prices[src] = 0
+
+        #because k + 1 edges => k vertices
+        for i in range(k + 1):
+            tmpPrices = prices.copy()
+
+            for s, d, p in flights:  # s=source, d=dest, p=price
+                if prices[s] != float("inf") and prices[s] + p < tmpPrices[d]:
+                    tmpPrices[d] = prices[s] + p
+            prices = tmpPrices
+        return -1 if prices[dst] == float("inf") else prices[dst]
 
 
 if __name__ == '__main__':
-    s = Solution()
+    s = Solution_dijkstra() #BFS
+    # s = Solution_BFS() #BFS
+    # s = Solution_Bellmanford() # bellman ford
 
     n = 94
     flights = [[49, 35, 7292], [44, 58, 4164], [4, 84, 7244], [45, 50, 2445], [86, 33, 2878], [22, 70, 7119],
