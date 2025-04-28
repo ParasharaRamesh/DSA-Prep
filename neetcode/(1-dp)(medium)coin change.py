@@ -111,7 +111,13 @@ class Solution:
         res = dp[(0, amount)]
         return res if res < float("inf") else -1
 
+'''
+NOTE: defaultdict takes in one parameter which is a function with no parameters which returns an object in case of a missing value.
+problem is that it cannot do conditional object creation based on the key being put, which is why UserDict is very powerful
 
+All one needs to do is to subclass UserDict from collections and implement the __missing__ dunder method.
+
+'''
 #useful for the bottom up trick for dp
 class SmartDP(UserDict):
     def __init__(self, coins_len):
