@@ -8,7 +8,7 @@ def longestCommonSubsequence(str1, str2):
     equalCase = []
     chooseOneIgnoreTwo = []
     chooseTwoIgnoreOne = []
-    ignoreBoth = []
+    # ignoreBoth = []
 
     if str1[0] == str2[0]:
         #include the common character
@@ -19,13 +19,14 @@ def longestCommonSubsequence(str1, str2):
         #extend with other possibilities
         chooseOneIgnoreTwo.extend(longestCommonSubsequence(str1[1:], str2))
         chooseTwoIgnoreOne.extend(longestCommonSubsequence(str1, str2[1:]))
-        ignoreBoth.extend(longestCommonSubsequence(str1[1:], str2[1:]))
+        # ignoreBoth.extend(longestCommonSubsequence(str1[1:], str2[1:]))
 
+    #ignore both case is not needed!
     possibilities = [
         [len(equalCase), equalCase],
         [len(chooseOneIgnoreTwo), chooseOneIgnoreTwo],
-        [len(chooseTwoIgnoreOne), chooseTwoIgnoreOne],
-        [len(ignoreBoth), ignoreBoth]
+        [len(chooseTwoIgnoreOne), chooseTwoIgnoreOne]
+        # [len(ignoreBoth), ignoreBoth]
     ]
 
     return max(possibilities)[1]
