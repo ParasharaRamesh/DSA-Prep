@@ -36,5 +36,99 @@ s consists of digits
 
 
 class Solution:
+    def numDecodings_topdown(self, s: str) -> int:
+        # trvial cases
+        if s[0] == "0":
+            return 0
+
+        cache = dict()
+
+        # tail recursion
+        def helper(i):
+            if i in cache:
+                return cache[i]
+
+            #valid case to count
+            if i == len(s) - 1:
+                ans = 1 if s[i] != "0" else 0
+                cache[i] = ans
+
+            # valid case to count
+            if i >= len(s):
+                cache[i] = 1
+                return cache[i]
+
+            # trivial case
+            if s[i] == "0":
+                cache[i] = 0
+                return cache[i]
+
+            res = 0
+
+            # can group by one
+            res += helper(i + 1)
+
+            # can group by two as long as s[i] is 1 and s[i] is 2 with s[i+1] E [0,6]
+            if i + 1 < len(s):  # as long as the next character is in bounds
+                if s[i] == "1":
+                    res += helper(i + 2)
+                elif s[i] == "2" and 0 <= int(s[i + 1]) <= 6:
+                    res += helper(i + 2)
+
+            cache[i] = res
+            return res
+
+        return helper(0)
+
+    #bottom up
     def numDecodings(self, s: str) -> int:
-        pass
+        # trvial cases
+        if s[0] == "0":
+            return 0
+
+        cache = dict()
+        n = len(s)
+
+        #base cases
+        cache[n-1] = 1 if s[n-1] != "0" else 0
+        cache[n] = 1
+
+        #traverse
+        for i in range(n-2, -1, -1):
+            if s[i] == "0":
+                cache[i] = 0
+                continue
+
+            res = 0
+
+            #group by 1
+            res += cache[i + 1]
+
+            #group by 2
+            if s[i] == "1":
+                res += cache[i + 2]
+            elif s[i] == "2" and 0 <= int(s[i + 1]) <= 6:
+                res += cache[i + 2]
+
+            cache[i] = res
+
+        return cache[0]
+
+
+if __name__ == '__main__':
+    s = Solution()
+
+    st = "226"
+    expected = 3
+    ans = s.numDecodings(st)
+    assert ans == expected, f"expected: {expected}, got {ans}"
+
+    st = "12"
+    expected = 2
+    ans = s.numDecodings(st)
+    assert ans == expected, f"expected: {expected}, got {ans}"
+
+    st = "10"
+    expected = 1
+    ans = s.numDecodings(st)
+    assert ans == expected, f"expected: {expected}, got {ans}"
