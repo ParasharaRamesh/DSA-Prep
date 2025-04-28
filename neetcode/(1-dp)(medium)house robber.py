@@ -28,31 +28,40 @@ from typing import List
 
 
 class Solution:
+    #topdown
+    def rob_topdown(self, nums: List[int]) -> int:
+        cache = dict()
+
+        def helper(i):
+            if i in cache:
+                return cache[i]
+
+            if i >= len(nums):
+                cache[i] = 0
+                return 0
+
+            exc = helper(i+1)
+            inc = nums[i] + helper(i+2)
+            cache[i] = max(exc, inc)
+            return cache[i]
+
+        return helper(0)
+
+    #bottomup
     def rob(self, nums: List[int]) -> int:
         cache = dict()
 
-        def helper(i, cost):
-            key = (i, cost)
+        n = len(nums)
 
-            if key in cache:
-                return cache[key]
+        #basecases
+        cache[n] = 0
+        cache[n+1] = 0
+        cache[n+2] = 0
 
-            # print(f"i:{i}, cost: {cost}")
-            if i >= len(nums):
-                # print(f"final OUT i: {i}, ans: {cost}")
-                cache[key] = cost
-                return cost
+        #reverse topological
+        for i in range(n-1, -1, -1):
+            exc = cache[i+1]
+            inc = nums[i] + cache[i+2]
+            cache[i] = max(exc, inc)
 
-            if i == len(nums) - 1:
-                # print(f"final - last i: {i}, {cost} + {nums[i]} -> ans: {cost + nums[i]}")
-                cache[key] = cost + nums[i]
-                return cost + nums[i]
-
-
-            inc = helper(i + 2, cost + nums[i])
-            exc = helper(i + 1, cost)
-            cache[key] =  max(inc, exc)
-            # print(f"final i: {i}, ans: {cache[key]}")
-            return cache[key]
-
-        return helper(0, 0)
+        return cache[0]
