@@ -33,11 +33,11 @@ Constraints:
 0 <= amount <= 10000
 
 '''
+from collections import defaultdict, UserDict
 from typing import List
 
-
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def coinChange_topdown(self, coins: List[int], amount: int) -> int:
         cache = dict()
 
         def helper(i, amount):
@@ -67,3 +67,68 @@ class Solution:
 
         res = helper(0, amount)
         return res if res < float("inf") else -1
+
+    def coinChange_bottomup(self, coins: List[int], amount: int) -> int:
+        cache = defaultdict(int)
+        n = len(coins)
+
+        # base cases (handled inside loops)
+        for i in range(n, -1, -1):
+            #just went through all of the amounts
+            for amt in range(0, amount + 1):
+                key = (i, amt)
+
+                if amt == 0:
+                    cache[key] = 0
+                elif i == n:
+                    cache[key] = float("inf")
+                else:
+                    inc = float("inf")
+                    exc = float("inf")
+
+                    if coins[i] <= amt:
+                        inc = 1 + cache[(i, amt - coins[i])]
+
+                    exc = cache[(i + 1, amt)]
+
+                    cache[key] = min(inc, exc)
+
+        res = cache[(0, amount)]
+        return res if res < float("inf") else -1
+
+    def coinChange_bottomup_trick(coins: List[int], amount: int) -> int:
+        n = len(coins)
+        dp = SmartDP(n) #refer to the class below
+
+        # Fill states starting from i = n-1 to 0
+        for i in range(n - 1, -1, -1):
+            for amt in range(1, amount + 1):
+                #none of the conditions are needed, since if a key is missing, dp will return the correct one automatically! :)
+                inc = 1 + dp[(i, amt - coins[i])]
+                exc = dp[(i + 1, amt)]
+                dp[(i, amt)] = min(inc, exc)
+
+        res = dp[(0, amount)]
+        return res if res < float("inf") else -1
+
+
+#useful for the bottom up trick for dp
+class SmartDP(UserDict):
+    def __init__(self, coins_len):
+        super().__init__()
+        self.coins_len = coins_len
+
+    def __missing__(self, key):
+        i, amt = key
+
+        if amt < 0:
+            return float("inf")
+        elif amt == 0:
+            value = 0
+        elif i >= self.coins_len:
+            value = float("inf")
+        else:
+            value = float("inf")
+
+        self[key] = value  # memoize
+        return value
