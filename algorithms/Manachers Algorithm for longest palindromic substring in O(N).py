@@ -52,11 +52,11 @@ class Solution:
 
         # go over each character, compare with mirrored index and find lower bound , grow from lower bound and update the values
         for i in range(n):
-            # mirrored index(i)
-            mirror = 2 * center - i
-
             # is this current index i within the radius from the current center
-            if i < radius:
+            if center - radius < i < center + radius:
+                # mirrored index(i)
+                mirror = 2 * center - i
+
                 palindrome_radius[i] = min(
                     palindrome_radius[mirror],
                     # in case the left half contains palindromes which do not extend beyond the left boundary @ c - (r-c)
@@ -64,11 +64,14 @@ class Solution:
                     # in case the left half contains palindromes which are actually exceeding the left boundary, the mirror palindrome value will be a lot higher and we need a value smaller than that. Therefore we need to restrict ourselves within the left-right boundaries.
                 )
 
+            # NOTE: in case, the index i was not inside the current radius from the center, then the palindrome_radius is basically 0, which means you just try to compute that from the center moving outwards char by char from 0.
             # try to grow and find the correct value for palindrome_radius[i], because now we know a lower bound and can compare from the fringe
-            while (i - (palindrome_radius[i] + 1) >= 0 and # as long as left edge of palindrome radius of i is within bounds
-                   i + (palindrome_radius[i] + 1) < n and  # as long as right edge of palindrome radius of i is within bounds
-                   s[i - (palindrome_radius[i] + 1)] == s[i + (palindrome_radius[i] + 1)]): # as long as the fringe elements after growing are equal
-                palindrome_radius[i] += 1 # keep adding to the palindrome length
+            while (
+                i - (palindrome_radius[i] + 1) >= 0 and  # as long as left edge of palindrome radius of i is within bounds
+                i + (palindrome_radius[i] + 1) < n and  # as long as right edge of palindrome radius of i is within bounds
+                s[i - (palindrome_radius[i] + 1)] == s[i + (palindrome_radius[i] + 1)]
+            ):  # as long as the fringe elements after growing are equal
+                palindrome_radius[i] += 1  # keep adding to the palindrome length
 
             # move the center to the next location. if the final palindrome @ i exceeds the right boundary, then i is the new center and the right most position is also updated
             if i + palindrome_radius[i] > radius:
@@ -81,7 +84,6 @@ class Solution:
                 longest_palindrome = s[i - palindrome_radius[i]: i + palindrome_radius[i]].replace("#", "")
 
         return longest_palindrome
-
 
 if __name__ == '__main__':
     s = Solution()
