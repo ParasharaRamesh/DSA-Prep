@@ -30,4 +30,61 @@ from typing import List
 
 class Solution:
     def rob(self, nums: List[int]) -> int:
-        pass
+        n = len(nums)
+
+        if n == 1:
+            return nums[0]
+
+        # do it twice on two different arrays
+        return max(self.rob1(nums[1:]), self.rob1(nums[:-1]))
+
+    #house robber 1 solution
+    def rob1(self, nums: List[int]) -> int:
+        cache = dict()
+
+        def helper(i):
+            if i in cache:
+                return cache[i]
+
+            if i >= len(nums):
+                cache[i] = 0
+                return 0
+
+            exc = helper(i + 1)
+            inc = nums[i] + helper(i + 2)
+            cache[i] = max(exc, inc)
+            return cache[i]
+
+        return helper(0)
+
+    #mysolution: keep track of a flag
+    def rob(self, nums: List[int]) -> int:
+        cache = dict()
+        n = len(nums)
+
+        if n == 1:
+            return nums[0]
+
+        def helper(i, from_start):
+            key = (i, from_start)
+
+            if key in cache:
+                return cache[key]
+
+            if from_start:
+                # cant include the last one
+                if i >= len(nums) - 1:
+                    cache[key] = 0
+                    return 0
+            elif i >= len(nums):
+                # can include the last one
+                cache[key] = 0
+                return 0
+
+            exc = helper(i + 1, from_start)
+            inc = nums[i] + helper(i + 2, from_start)
+
+            cache[key] = max(exc, inc)
+            return cache[key]
+
+        return max(helper(0, True), helper(1, False))
