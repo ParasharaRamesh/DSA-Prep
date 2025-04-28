@@ -33,9 +33,10 @@ from typing import List
 
 
 class Solution:
-    #top down memoization
+    # top down memoization
     def minCostClimbingStairs_topdown(self, cost: List[int]) -> int:
         cache = dict()
+
         def climb(i):
             if i in cache:
                 return cache[i]
@@ -49,20 +50,18 @@ class Solution:
 
         return min(climb(0), climb(1))
 
-    #bottom up
+    # bottom up
     def minCostClimbingStairs_bottomup(self, cost: List[int]) -> int:
         cache = dict()
+        n = len(cost)
 
-        cache[0] = cost[0]
-        def climb(i):
-            if i in cache:
-                return cache[i]
+        # base case
+        cache[n] = 0
+        cache[n + 1] = 0
+        cache[n + 2] = 0
 
-            if i >= len(cost):
-                cache[i] = 0
-                return 0
+        # reverse topological order of state visits
+        for i in range(n - 1, -1, -1):
+            cache[i] = cost[i] + min(cache[i + 1], cache[i + 2])
 
-            cache[i] = cost[i] + min(climb(i + 1), climb(i + 2))
-            return cache[i]
-
-        return min(climb(0), climb(1))
+        return min(cache[0], cache[1])
