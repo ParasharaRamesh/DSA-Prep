@@ -27,27 +27,55 @@ Constraints:
 1 <= n <= 30
 '''
 
-# from functools import cache
+from functools import cache
 
 class Solution:
-    def helper(self, n, res, cache):
-        if n in cache:
-            return cache[n]
+    def climbStairs_topdown_with_lrucache(self, n: int) -> int:
+        @cache
+        def helper(i):
+            if i > n:
+                return 0
 
-        if n < 0:
-            cache[n] = 0
-            return 0
+            if i == n:
+                return 1
 
-        if n == 0:
-            res += 1
-            cache[n] = res
-            return res
+            return helper(i + 1) + helper(i + 2)
 
-        cache[n] = self.helper(n-1, res, cache) + self.helper(n-2, res, cache)
-        return cache[n]
-
-    def climbStairs(self, n: int) -> int:
-        res = 0
-        cache = dict()
-        res = self.helper(n, res, cache)
+        res = helper(0)
         return res
+
+    def climbStairs_topdown(self, n: int) -> int:
+        cache = dict()
+
+        def helper(i):
+            key = i
+
+            if key in cache:
+                return cache[key]
+
+            if i > n:
+                cache[key] = 0
+                return 0
+
+            if i == n:
+                cache[key] = 1
+                return 1
+
+            cache[key] = helper(i + 1) + helper(i + 2)
+            return cache[key]
+
+        res = helper(0)
+        return res
+
+    def climbStairs_bottomup(self, n: int) -> int:
+        cache = dict()
+
+        # base cases
+        cache[0] = 0
+        cache[1] = 1
+        cache[2] = 2
+
+        for i in range(3, n + 1):
+            cache[i] = cache[i - 1] + cache[i - 2]
+
+        return cache[n]
