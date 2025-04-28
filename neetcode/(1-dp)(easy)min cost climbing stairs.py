@@ -29,13 +29,40 @@ Constraints:
 2 <= cost.length <= 100
 0 <= cost[i] <= 100
 '''
+from typing import List
 
 
 class Solution:
-    def minCostClimbingStairs(self, cost: List[int]) -> int:
+    #top down memoization
+    def minCostClimbingStairs_topdown(self, cost: List[int]) -> int:
+        cache = dict()
         def climb(i):
+            if i in cache:
+                return cache[i]
+
             if i >= len(cost):
+                cache[i] = 0
                 return 0
-            return cost[i] + min(climb(i + 1), climb(i + 2))
+
+            cache[i] = cost[i] + min(climb(i + 1), climb(i + 2))
+            return cache[i]
+
+        return min(climb(0), climb(1))
+
+    #bottom up
+    def minCostClimbingStairs_bottomup(self, cost: List[int]) -> int:
+        cache = dict()
+
+        cache[0] = cost[0]
+        def climb(i):
+            if i in cache:
+                return cache[i]
+
+            if i >= len(cost):
+                cache[i] = 0
+                return 0
+
+            cache[i] = cost[i] + min(climb(i + 1), climb(i + 2))
+            return cache[i]
 
         return min(climb(0), climb(1))

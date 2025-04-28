@@ -67,6 +67,7 @@ class Solution:
         res = helper(0)
         return res
 
+    # 1 way where the order of recurrence is flipped which is tricky
     def climbStairs_bottomup(self, n: int) -> int:
         cache = dict()
 
@@ -79,3 +80,16 @@ class Solution:
             cache[i] = cache[i - 1] + cache[i - 2]
 
         return cache[n]
+
+    def climbStairs_bottomup_better(self, n: int) -> int:
+        cache = dict()
+
+        # base cases
+        cache[n] = 1
+        cache[n+1] = 0
+        cache[n+2] = 0
+
+        for i in range(n-1, -1, -1):
+            cache[i] = cache[i + 1] + cache[i + 2]
+
+        return cache[0]
