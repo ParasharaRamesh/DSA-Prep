@@ -32,7 +32,6 @@ class Solution:
 
     . the standard kadane's method wont work because with negative numbers the sign can get flipped instantly making whatever was large -> small ( in negative direction) and vice versa
     . that's why it is better to keep track of both maximum and minimum and if at all a negative number comes we swap it so that we are still continuing to keep track of things.
-    . perhaps sliding window is more intuitive
     '''
 
     def maxProduct_kadane(self, nums: List[int]) -> int:
@@ -79,7 +78,7 @@ class Solution:
     3. Prefix and suffix method:
     
     - for this problem the best solution is definitely going to be linked with one of the ends
-    - therefore build from both sides and see which is better every step of the way
+    - therefore build cummulative product from both sides and see which is better every step of the way
     '''
 
     def maxProduct_prefix_suffix(self, nums: List[int]) -> int:
