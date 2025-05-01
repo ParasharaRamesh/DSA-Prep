@@ -24,6 +24,7 @@ Constraints:
 1 <= prices.length <= 100
 0 <= prices[i] <= 100
 '''
+from typing import List
 
 
 class Solution:
