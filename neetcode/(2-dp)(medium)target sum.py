@@ -50,7 +50,7 @@ class Solution:
 
         return helper(0, target)
 
-    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+    def findTargetSumWays_tabulation(self, nums: List[int], target: int) -> int:
         n = len(nums)
         cache = defaultdict(int)
 
@@ -64,6 +64,24 @@ class Solution:
                 cache[key] = cache[(i + 1, left - nums[i])] + cache[(i + 1, left + nums[i])]
 
         return cache[(0, target)]
+
+    #space optimized bottom-up tabuluation dp
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        from collections import defaultdict
+
+        n = len(nums)
+        total = sum(nums)
+
+        nxt = defaultdict(int)
+        nxt[0] = 1  # base case
+
+        for i in range(n - 1, -1, -1):
+            cur = defaultdict(int)
+            for left in range(-total, total + 1):
+                cur[left] = nxt[left - nums[i]] + nxt[left + nums[i]]
+            nxt = cur  # move to next layer
+
+        return nxt[target]
 
 if __name__ == '__main__':
     s = Solution()
