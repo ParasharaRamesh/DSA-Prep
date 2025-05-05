@@ -33,12 +33,31 @@ Constraints:
 Each appearance of '*', will be preceded by a valid character or '.'.
 '''
 
+from functools import lru_cache
+
 
 class Solution:
-    # my solutions
+    def isMatch(self, s: str, p: str) -> bool:
+        @lru_cache(None)
+        def dp(i: int, j: int) -> bool:
+            # Base case: pattern exhausted
+            if j == len(p):
+                return i == len(s)
+
+            # Check if current characters match
+            first_match = i < len(s) and (s[i] == p[j] or p[j] == '.')
+
+            # Lookahead for '*'
+            if j + 1 < len(p) and p[j + 1] == '*':
+                # Two cases: zero occurrences OR one+ if first matches
+                return dp(i, j + 2) or (first_match and dp(i + 1, j))
+            else:
+                return first_match and dp(i + 1, j + 1)
+
+        return dp(0, 0)
 
     # topdown
-    def isMatch(self, s: str, p: str) -> bool:
+    def isMatch_ugly(self, s: str, p: str) -> bool:
         m, n = len(s), len(p)
 
         cache = dict()
