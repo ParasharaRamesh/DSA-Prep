@@ -21,6 +21,7 @@ n == nums.length
 0 <= nums[i] <= 100
 
 '''
+from collections import defaultdict
 from typing import List
 
 
@@ -28,7 +29,8 @@ class Solution:
     def __init__(self):
         self.cache = dict()
 
-    def maxCoins(self, nums: List[int]) -> int:
+    # bit space inefficient but very similar principles
+    def maxCoins_mysolution(self, nums: List[int]) -> int:
         key = tuple(nums)
 
         if key in self.cache:
@@ -48,9 +50,70 @@ class Solution:
             else:
                 burst_i = nums[i - 1] * num * nums[i + 1]
 
+            # joining the ends
             total_burst_i = burst_i + self.maxCoins(nums[:i] + nums[i + 1:])
             max_coins = max(max_coins, total_burst_i)
 
         self.cache[key] = max_coins
 
         return max_coins
+
+    # topdown neetcode inspired solution: since we are dealing with subarray slices, we can as well just use l & r
+    def maxCoins_memo(self, nums: List[int]) -> int:
+        # extending the ends
+        nums = [1] + nums + [1]
+
+        cache = dict()
+
+        def helper(l, r):
+            key = (l, r)
+
+            if key in cache:
+                return cache[key]
+
+            # invalid state
+            if l > r:
+                cache[key] = 0
+                return 0
+
+            max_coins = 0
+            for i in range(l, r + 1):
+                # burst everything else first
+                coins = helper(l, i - 1) + helper(i + 1, r)
+
+                # then burst ith balloon ( with whatever is left )
+                coins += nums[l - 1] * nums[i] * nums[r + 1]
+                max_coins = max(max_coins, coins)
+
+            cache[key] = max_coins
+            return max_coins
+
+        # excluding the ends
+        return helper(1, len(nums) - 2)
+
+    def maxCoins_tabulation(self, nums: List[int]) -> int:
+        # extending the ends
+        n = len(nums)
+        nums = [1] + nums + [1]
+
+        cache = defaultdict(int)
+
+        for l in range(n, 0, -1):
+            for r in range(l, n + 1):
+                key = (l, r)
+
+                # invalid state l > r will be handled by default dict
+
+                max_coins = 0
+                for i in range(l, r + 1):
+                    # burst everything else first
+                    coins = cache[(l, i - 1)] + cache[(i + 1, r)]
+
+                    # then burst ith balloon ( with whatever is left )
+                    coins += nums[l - 1] * nums[i] * nums[r + 1]
+                    max_coins = max(max_coins, coins)
+
+                cache[key] = max_coins
+
+        # excluding the ends
+        return cache[(1, n)]
