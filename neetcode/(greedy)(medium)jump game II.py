@@ -26,6 +26,12 @@ Constraints:
 '''
 from typing import List
 
+'''
+. inside the range from [l,r] figure out what is the furthest you can reach. Therefore in one jump you can reach anywhere from [l, farthest]
+. once we find the max farthest in the range [l, r] that constitutes as one jump
+. move l to the next one after r (i.e after current window) & move r to the current farthest point
+. the moment r is greater than the last index, we just stop
+'''
 
 class Solution:
     def jump(self, nums: List[int]) -> int:
@@ -42,7 +48,7 @@ class Solution:
             # once we find the max farthest in the range [l, r] that constitutes as one jump
             jumps += 1
 
-            # move l to the next one & move r to the current farthest point
+            # move l to the next one after r (i.e after current window) & move r to the current farthest point
             l = r + 1
             r = farthest
 
