@@ -25,7 +25,8 @@ from typing import List
 
 
 class Solution:
-    def canJump(self, nums: List[int]) -> bool:
+    # Dynamic programming solution (TLE on leetcode!)
+    def canJump_dp(self, nums: List[int]) -> bool:
         cache = dict()
 
         def helper(i):
@@ -53,3 +54,16 @@ class Solution:
             return is_possible
 
         return helper(0)
+
+    # greedy solution
+    def canJump(self, nums: List[int]) -> bool:
+        n = len(nums)
+        goal = n - 1
+
+        # check if everything before can reach that goal
+        for i in range(n - 2, -1, -1):
+           if nums[i] >= goal - i:
+               goal = i
+
+        # if it has come all the way to the starting then it is reachable
+        return goal == 0
