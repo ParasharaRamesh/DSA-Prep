@@ -40,5 +40,62 @@ from typing import List
 
 
 class Solution:
+    '''
+    . Brute force is n^2 , start from all indices and go around
+    . In case sum(gas) < sum(cost) -> then it is not possible -> return -1
+    . Else, it is definitely possible:
+        - start with index 0 and move forward as much as possible until the total_diff < 0.
+        - in which case reset the total_diff and move the possible index to i + 1
+
+    '''
     def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
-        pass
+        # Sigma(gi - ci) < 0 => Sigma(gi) < Sigma(ci)
+        if sum(gas) < sum(cost):
+            return -1
+
+        # find the first index from where things are fine. if not reset
+        total_delta = 0
+        index = 0
+        for i, item in enumerate(zip(gas, cost)):
+            g, c = item
+            total_delta += g - c
+            if total_delta < 0:
+                total_delta = 0
+                index = i + 1
+
+        return index
+
+
+
+if __name__ == '__main__':
+    s = Solution()
+
+    gas = [5, 8, 2, 8]
+    cost = [6, 5, 6, 6]
+    expected = 3
+    ans = s.canCompleteCircuit(gas, cost)
+    assert ans == expected, f"{expected = }, {ans = }"
+
+    gas = [4, 1, 2, 3]
+    cost = [1, 2, 2, 4]
+    expected = 0
+    ans = s.canCompleteCircuit(gas, cost)
+    assert ans == expected, f"{expected = }, {ans = }"
+
+    gas = [3, 4, 1, 2]
+    cost = [4, 1, 2, 2]
+    expected = 1
+    ans = s.canCompleteCircuit(gas, cost)
+    assert ans == expected, f"{expected = }, {ans = }"
+
+    gas = [1, 2, 3, 4]
+    cost = [2, 2, 4, 1]
+    expected = 3
+    ans = s.canCompleteCircuit(gas, cost)
+    assert ans == expected, f"{expected = }, {ans = }"
+
+    gas = [1, 2, 3]
+    cost = [2, 3, 2]
+    expected = -1
+    ans = s.canCompleteCircuit(gas, cost)
+    assert ans == expected, f"{expected = }, {ans = }"
