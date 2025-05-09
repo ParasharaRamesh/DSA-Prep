@@ -46,7 +46,6 @@ class Solution:
     . Else, it is definitely possible:
         - start with index 0 and move forward as much as possible until the total_diff < 0.
         - in which case reset the total_diff and move the possible index to i + 1
-
     '''
     def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
         # Sigma(gi - ci) < 0 => Sigma(gi) < Sigma(ci)
