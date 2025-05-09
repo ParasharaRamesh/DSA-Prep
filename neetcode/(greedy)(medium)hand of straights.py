@@ -43,13 +43,11 @@ class Solution:
 
         while len(counts) > 0:
             for hand in sorted_keys:
-                print(f"counts are {counts}, group is {group}")
                 if hand in counts:
                     if len(group) == 0:
                         group.append(hand)
                         counts[hand] -= 1
                     elif len(group) == groupSize:
-                        print(f"group is cleared")
                         group.clear()
                         break
                     else:
@@ -57,7 +55,6 @@ class Solution:
                             group.append(hand)
                             counts[hand] -= 1
                         else:
-                            print(f"false :(")
                             return False
 
                     # remove hand
