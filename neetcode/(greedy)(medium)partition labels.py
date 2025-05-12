@@ -25,6 +25,13 @@ Constraints:
 from typing import List
 
 
+'''
+1. Keep track of each unique char's last index
+2. init 2 pointers l and r to both 0
+3. for each character find the last occurence, if the last occurence happens to be the same then that is definitely one group 
+4. if the last character is far away set that index as r , and just increment r
+5. keep incrementing group_count everytime l increments
+'''
 class Solution:
     def partitionLabels(self, s: str) -> List[int]:
         groups = []
