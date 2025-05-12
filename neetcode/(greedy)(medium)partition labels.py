@@ -27,68 +27,62 @@ from typing import List
 
 class Solution:
     def partitionLabels(self, s: str) -> List[int]:
-        # make a dict of char -> list of indicies
-        char_to_inds = {char: [] for char in set(s)}
-
-        for i, char in enumerate(s):
-            char_to_inds[char].append(i)
-
-        '''
-        for each char:
-            0. its always better to be a single char group or group with min chars
-            a. find the furthest away it is , and include that ( set the end pointer to that )
-            b. for the next char after that see if it is already in current group charset if yes include (till next index ) if no then its a new group
-        '''
-        start = 0
-        end = 0
         groups = []
-        current_groupset = None
 
-        # print(f"char_to_inds is {char_to_inds}")
+        char_to_last_ind = dict()
+        for i, char in enumerate(s):
+            char_to_last_ind[char] = i
 
-        while end < len(s):
-            curr_char = s[end]
-            curr_char_inds = char_to_inds[curr_char]
+        # grow as much as possible
+        n = len(s)
+        l, r = 0, 0
 
-            # print(f"begin | start: {start}, end: {end}, curr_char: {curr_char}, curr_char_inds: {curr_char_inds}")
-            # this in itself is a group
-            if len(curr_char_inds) == 1:
-                groups.append(end - start + 1)
+        while l <= r < n:
+            group_count = 0
 
-                # print(f"curr_char_is just one | group is {s[start: end+1]}")
+            while l <= r < n:
+                curr_char_last_ind = char_to_last_ind[s[l]]
 
-                start = end + 1
-                end = start
-                # print(f"curr_char_is just one | new start: {start} and new end: {end}")
-            else:
-                end = curr_char_inds[-1]
+                if l == curr_char_last_ind:
+                    # only char
+                    l += 1
+                    group_count += 1
+                else:
+                    # it is there somewhere further down the line
+                    l += 1
+                    r = max(r, curr_char_last_ind)
+                    group_count += 1
 
-                current_groupset = set(s[start:end + 1])
-                # print(f"else | current_groupset is {current_groupset}, start: {start}, end: {end}")
-
-                # pick the max
-                while True:
-                    max_inds = [(char_to_inds[group_char][-1], group_char) for group_char in current_groupset]
-                    end, last_char = max(max_inds, key=lambda x: x[0])
-                    # print("-" * 50)
-                    # print(f"new end with greedy biggest {end} and last char is {last_char}")
-
-                    new_group = set(s[start: end + 1])
-
-                    if new_group != current_groupset:
-                        current_groupset = new_group
-                        # print(f"setting new current_groupset to {current_groupset}")
-                    else:
-                        # print("group done!")
-                        break
-
-                # set this as the next group
-                groups.append(end - start + 1)
-                # print(f"new group is {s[start:end+1]} and groups is {groups}")
-
-                start = end + 1
-                end = start
-                # print("-" * 50)
-                # print()
+            groups.append(group_count)
+            r = l # start from the next place
 
         return groups
+
+
+if __name__ == '__main__':
+    sol = Solution()
+
+    s = "abbec"
+    expected = [1, 2, 1, 1]
+    ans = sol.partitionLabels(s)
+    assert expected == ans, f"{expected = }, {ans = }"
+
+    s = "eccbbbbdec"
+    expected = [10]
+    ans = sol.partitionLabels(s)
+    assert expected == ans, f"{expected = }, {ans = }"
+
+    s = "abcabc"
+    expected = [6]
+    ans = sol.partitionLabels(s)
+    assert expected == ans, f"{expected = }, {ans = }"
+
+    s = "xyxxyzbzbbisl"
+    expected = [5, 5, 1, 1, 1]
+    ans = sol.partitionLabels(s)
+    assert expected == ans, f"{expected = }, {ans = }"
+
+    s = "ababcbacadefegdehijhklij"
+    expected = [9, 7, 8]
+    ans = sol.partitionLabels(s)
+    assert expected == ans, f"{expected = }, {ans = }"
