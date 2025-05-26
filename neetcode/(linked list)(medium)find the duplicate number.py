@@ -13,12 +13,7 @@ Example 2:
 Input: nums = [1,2,3,4,4]
 
 Output: 4
-Follow-up: Can you solve the problem without modifying the array nums and using
-O
-(
-1
-)
-O(1) extra space?
+Follow-up: Can you solve the problem without modifying the array nums and using O(1) extra space?
 
 Constraints:
 

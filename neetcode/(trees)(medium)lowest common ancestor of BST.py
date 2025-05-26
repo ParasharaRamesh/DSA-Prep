@@ -53,3 +53,10 @@ class Solution:
             return self.lowestCommonAncestor(root.right, p, q)
 
         return None
+
+'''
+1. can hash the ids of the nodes also in both paths
+2. can use a two pointer technique if parent pointers are there and both go towards root and when one exhausts jump to the other one. Eventually things will sync up and you will find the common LCA
+
+'''
+
