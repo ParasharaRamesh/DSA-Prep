@@ -26,6 +26,7 @@ Constraints:
 -109 <= nums[i] <= 109
 
 '''
+from collections import defaultdict
 from typing import List
 
 
@@ -53,3 +54,16 @@ class Solution:
             longest = max(longest, count)
 
         return longest
+
+    #neetcode solution O(n)
+    def longestConsecutive_neetcode(self, nums: List[int]) -> int:
+        mp = defaultdict(int)
+        res = 0
+
+        for num in nums:
+            if not mp[num]:
+                mp[num] = mp[num - 1] + mp[num + 1] + 1
+                mp[num - mp[num - 1]] = mp[num]
+                mp[num + mp[num + 1]] = mp[num]
+                res = max(res, mp[num])
+        return res

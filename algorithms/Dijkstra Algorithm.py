@@ -43,7 +43,7 @@ def dijkstrasAlgorithm(start, edges):
     return distances
 
 
-# neetcode solution ( just uses the (distance to vertex, vertex) and a seen set, if something is already seen just skip, and for the frine neighbours just add it in the ones not seen else skip/ continue. This way we always pick the smallest
+# neetcode solution ( just uses the (distance to vertex, vertex) and a seen set, if something is already seen just skip, and for the fringe neighbours just add it in the ones not seen else skip/ continue. This way we always pick the smallest
 class Solution:
     # Implementation for Dijkstra's shortest path algorithm
     def shortestPath(self, n: int, edges: List[List[int]], src: int) -> Dict[int, int]:
