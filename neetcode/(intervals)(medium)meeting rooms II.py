@@ -37,7 +37,8 @@ Thoughts:
 '''
 
 from typing import List
-from collections import deque
+from collections import deque, defaultdict
+
 
 class Interval(object):
     def __init__(self, start, end):
@@ -101,20 +102,33 @@ class Solution:
         return res
 
     # Scan line variant
-
+    def minMeetingRooms_sweep_line(self, intervals: List[Interval]) -> int:
+        mp = defaultdict(int)
+        for i in intervals:
+            mp[i.start] += 1
+            mp[i.end] -= 1
+        prev = 0
+        res = 0
+        for i in sorted(mp.keys()):
+            prev += mp[i]
+            res = max(res, prev)
+        return res
 
 if __name__ == '__main__':
     s = Solution()
+
+    intervals = [Interval(0,40),Interval(5,10),Interval(15,20)]
+    # days = s.minMeetingRooms(intervals)
+    # days = s.minMeetingRooms_sorting_two_pointers(intervals)
+    days = s.minMeetingRooms_sweep_line(intervals)
+    expected = 2
+    assert days == expected, f"expected {expected}, got {days}"
 
     intervals = [Interval(2,15),Interval(36,45),Interval(9,29),Interval(16,23),Interval(4,9)]
     days = s.minMeetingRooms(intervals)
     expected = 2
     assert days == expected, f"expected {expected}, got {days}"
 
-    intervals = [Interval(0,40),Interval(5,10),Interval(15,20)]
-    days = s.minMeetingRooms(intervals)
-    expected = 2
-    assert days == expected, f"expected {expected}, got {days}"
 
     intervals = [Interval(4,9)]
     days = s.minMeetingRooms(intervals)

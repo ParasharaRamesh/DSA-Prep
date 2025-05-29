@@ -69,6 +69,11 @@ class Solution:
 if __name__ == '__main__':
     sol = Solution()
 
+    s = "abcabc"
+    expected = [6]
+    ans = sol.partitionLabels(s)
+    assert expected == ans, f"{expected = }, {ans = }"
+
     s = "abbec"
     expected = [1, 2, 1, 1]
     ans = sol.partitionLabels(s)
@@ -76,11 +81,6 @@ if __name__ == '__main__':
 
     s = "eccbbbbdec"
     expected = [10]
-    ans = sol.partitionLabels(s)
-    assert expected == ans, f"{expected = }, {ans = }"
-
-    s = "abcabc"
-    expected = [6]
     ans = sol.partitionLabels(s)
     assert expected == ans, f"{expected = }, {ans = }"
 

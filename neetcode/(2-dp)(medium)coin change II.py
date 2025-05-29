@@ -69,6 +69,8 @@ class Solution:
             cache[key] = total
             return total
 
+        helper(0, amount)
+
     def change_tabulation(self, amount: int, coins: List[int]) -> int:
         cache = defaultdict(int)
 
