@@ -44,6 +44,7 @@ class Solution:
     3. find the path from furthest node1 -> furthest node2 to get the diameter path
     4. centroids of this path is the answer
 
+    Another approach can be to some kind of topological sort variant, where we peel off the outer most layers one by one until only 2 nodes are left
     '''
     def findMinHeightTrees(self, n: int, edges: List[List[int]]) -> List[int]:
         # adj matrix
