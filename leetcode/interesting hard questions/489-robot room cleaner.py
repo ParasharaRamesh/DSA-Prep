@@ -183,7 +183,7 @@ Thoughts:
     - how to come back? 
         . store parent cell it came from? but how to use it?
         . after operation , find out where the parent cell was orient towards it and finish
-. Official solution mentions using something called
+. Official solution mentions using spiral method.. just go forward and turn right all the time
 
 '''
 
