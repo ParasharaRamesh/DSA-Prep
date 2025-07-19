@@ -283,9 +283,6 @@ class Solution:
             self.curr_pos = new_pos
             self.explore(robot, new_pos, pos)  # it is supposed to come back to the new_pos
 
-            # come back to current pos
-            self.orient_down(robot)
-            robot.move()
 
         # explore left
         self.orient_left(robot)
@@ -294,10 +291,6 @@ class Solution:
             self.curr_pos = new_pos
             self.explore(robot, new_pos, pos)  # it is supposed to come back to the new_pos
 
-            # come back to current pos
-            self.orient_right(robot)
-            robot.move()
-
         # explore right
         self.orient_right(robot)
         new_pos = (pos[0] + self.RIGHT[0], pos[1] + self.RIGHT[1])
@@ -305,20 +298,12 @@ class Solution:
             self.curr_pos = new_pos
             self.explore(robot, new_pos, pos)  # it is supposed to come back to the new_pos
 
-            # come back to current pos
-            self.orient_left(robot)
-            robot.move()
-
         # explore down
         self.orient_down(robot)
         new_pos = (pos[0] + self.DOWN[0], pos[1] + self.DOWN[1])
         if new_pos not in self.cleaned_cells and robot.move():
             self.curr_pos = new_pos
             self.explore(robot, new_pos, pos)  # it is supposed to come back to the new_pos
-
-            # come back to current pos
-            self.orient_up(robot)
-            robot.move()
 
         # Move back to parent cell
         if not parent_pos:
@@ -332,15 +317,15 @@ if __name__ == '__main__':
     s = Solution()
 
     # test cases
-    # grid = [
-    #     [1]
-    # ]
-    # row = 0
-    # col = 0
-    # robot = Robot(grid, row, col)
-    # s.cleanRoom(robot)
-    # assert robot.is_all_cleaned(), "Still dirty"
-    # print("test 1 done")
+    grid = [
+        [1]
+    ]
+    row = 0
+    col = 0
+    robot = Robot(grid, row, col)
+    s.cleanRoom(robot)
+    assert robot.is_all_cleaned(), "Still dirty"
+    print("test 1 done")
 
     grid = [
         [1, 0, 1],
@@ -377,3 +362,19 @@ if __name__ == '__main__':
     robot = Robot(grid, row, col)
     s.cleanRoom(robot)
     assert robot.is_all_cleaned(), "Still dirty"
+    print("test 3 done")
+
+    grid = [
+        [1, 1, 0, 1, 1, 0, 1, 1, 0],
+        [1, 1, 1, 1, 1, 0, 1, 1, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 0, 1, 0, 1, 1, 0]
+    ]
+    row = 1
+    col = 3
+    robot = Robot(grid, row, col)
+    s.cleanRoom(robot)
+    assert robot.is_all_cleaned(), "Still dirty"
+    print("test 4 done")
