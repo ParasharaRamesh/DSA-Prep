@@ -183,6 +183,7 @@ Thoughts:
     - how to come back? 
         . store parent cell it came from? but how to use it?
         . after operation , find out where the parent cell was orient towards it and finish
+. Official solution mentions using something called
 
 '''
 
@@ -378,3 +379,19 @@ if __name__ == '__main__':
     s.cleanRoom(robot)
     assert robot.is_all_cleaned(), "Still dirty"
     print("test 4 done")
+
+    grid = [
+        [1, 1, 0, 1, 1, 0, 1, 1, 0],
+        [1, 1, 1, 1, 1, 0, 1, 1, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 0, 1, 0, 1, 1, 0]
+    ]
+    row = 2
+    col = 3
+    robot = Robot(grid, row, col)
+    s.cleanRoom(robot)
+    assert robot.is_all_cleaned(), "Still dirty"
+    print("test 5 done")
+
