@@ -42,7 +42,7 @@ def compute_kmp_prefix(substring):
         else:
             # Case 2: Mismatch.
             if length != 0:
-                # Fall back! Reset 'length' to the LPS length of the previous character (i-1)
+                # Fall back! Reset 'length' to the LPS length of the previous border
                 # The value lps[length - 1] is the next shortest border we can try.
                 length = lps[length - 1]
                 # NOTE: We do NOT increment 'i' here, we re-check with the new 'length' in the next iteration.

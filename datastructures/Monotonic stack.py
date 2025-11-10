@@ -35,7 +35,7 @@ def next_greater(arr):
 
 def previous_greater(arr):
     '''
-    Finds the immediately next greater element for each element, i.e the first element to the right that is greater than the current element
+    Finds the immediately previous greater element for each element, i.e the first element to the left that is greater than the current element
     '''
     res = [-1] * len(arr)
     stack = [] # just indices
@@ -73,7 +73,7 @@ def next_smaller(arr):
 
 def previous_smaller(arr):
     '''
-    Finds the immediately next smaller element for each element, i.e the first element to the right that is smaller than the current element
+    Finds the immediately previous smaller element for each element, i.e the first element to the left that is smaller than the current element
     '''
     res = [-1] * len(arr)
     stack = [] # just indices
