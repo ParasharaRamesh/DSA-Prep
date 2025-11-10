@@ -28,23 +28,23 @@ class SegmentTree:
         # return min(val1, val2)
         return sum([val1, val2])
 
-    def build(self, l, r, tree_index=0):
+    def build(self, start, end, tree_index=0):
         '''
-            l , r represent the indexes of the array
+            start, end represent the indexes of the array
             tree_index always starts at 0 for root
         '''
-        if l == r:
-            self.tree[tree_index] = self.arr[l]
+        if start == end:
+            self.tree[tree_index] = self.arr[start]
         else:
-            mid = l + (r - l) // 2
+            mid = start + (end - start) // 2
 
             # build the left part
             left_index = 2 * tree_index + 1
-            self.build(l, mid, left_index)
+            self.build(start, mid, left_index)
 
             # build the right part
             right_index = 2 * tree_index + 2
-            self.build(mid + 1, r, right_index)
+            self.build(mid + 1, end, right_index)
 
             # now combine the results
             self.tree[tree_index] = self.range_func(self.tree[left_index], self.tree[right_index])
