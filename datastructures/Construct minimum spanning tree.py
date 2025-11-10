@@ -64,12 +64,13 @@ def convertToAdjacencyList(mstList, n):
 #Approach 1
 def primsAlgorithm(edges):
     '''
-    PRIM's Algorithm
+    PRIM's Algorithm (NODE CENTRIC)
 
     * works only if the entire graph is already connected as a single thing, but can modify it for islands of connected components!
     * start with a single vertex in the MST and have all of its edges in the min heap initially!
     * amongst the edges pick the node with the smallest distance and then add that to the mst if it is not already visited and also add to visited set
     * take its neighbours and add it to the heap of edges ( fringe elements !)
+    * better to consider a visited set of nodes instead of edges because that makes it truly greedy and optimal. If it was visited set of edges, then we might have already seen 2 edges and we might add a 3rd unvisited edge into the visited set, even though those 3 edges together forms a cycle. Therefore it is better to keep track of destination nodes as the visisted set.
 
     :param edges:
     :return:
@@ -112,6 +113,8 @@ def primsAlgorithm(edges):
 #Approach 2
 def kruskalsAlgorithm(edges):
     '''
+    EDGE CENTRIC
+
     * Sort all edges and keep picking the lowest edges until it doesn't form a cycle.
     * if so discard that
 
