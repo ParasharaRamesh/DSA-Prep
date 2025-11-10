@@ -1,110 +1,148 @@
 class UnionFind:
-    NORMAL = "normal"
-    PATH_COMPRESSION = "pathCompression"
-    RANK = "rank"
+    """
+    Disjoint Set Union (Union-Find) with the baseline (no optimizations).
 
-    def __init__(self, mode=NORMAL):
-        self.mode = mode # controls if we want to do union find or union find by rank !
-        self.parent = dict()
-        self.rank = dict()  # basically the height of the tree under it
+    - create_set(x): adds a new singleton set containing x
+    - find(x): returns the representative (root) of x's set
+    - union(a, b): merges the sets containing a and b (if distinct)
+    - connected(a, b): True if a and b are in the same set
+    """
 
-    def createSet(self, value):
-        self.parent[value] = None
+    def __init__(self):
+        self.parent = {}
 
-        if self.mode == UnionFind.RANK:
-            self.rank[value] = 0
+    def create_set(self, value):
+        """
+        Create a standalone set for value if it does not exist yet.
+        * Make all values point to None initially -> topmost nodes
+        """
+        if value not in self.parent:
+            self.parent[value] = None
 
     def find(self, value):
+        """
+        Find the root representative without path compression.
+        * Traverse up the tree until we reach the topmost node (None)
+        * Return the parent/root. Which is that node which has a parent pointer as None (almost like linked list traversal)
+        """
         if value not in self.parent:
             return None
-
         curr = value
-        while self.parent[curr] != None:
+        while self.parent[curr] is not None:
             curr = self.parent[curr]
-
         return curr
 
-    def union(self, valueOne, valueTwo):
-        parent1 = self.find(valueOne)
-        parent2 = self.find(valueTwo)
+    def union(self, a, b):
+        """Merge two sets (naive attach)."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        # If either of the values are not in the set, then return
+        if root_a is None or root_b is None:
+            return
+        if root_a != root_b:
+            # Naively make root_b point to root_a -> basically make the parent of root_b point to root_a
+            self.parent[root_b] = root_a
 
-        if parent1 != parent2:
-            if self.mode == UnionFind.NORMAL:
-                #normal approach
-                # make 2's parent 1
-                self.parent[parent2] = parent1
-            elif self.mode == UnionFind.PATH_COMPRESSION:
-                #use path compression
-                #take all of valueTwo's hierarchy and point its parent to parent1
-                curr = valueTwo
-                while self.parent[curr] != None:
-                    temp = curr #to update the current node
-                    curr = self.parent[curr] #to traverse up
-                    self.parent[temp] = parent1
-                #last one
-                self.parent[curr] = parent1
-            elif self.mode == UnionFind.RANK:
-                #union find with rank
-                rank1 = self.rank[parent1]
-                rank2 = self.rank[parent2]
+    def connected(self, a, b):
+        """Return True if a and b belong to the same set."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        return root_a is not None and root_a == root_b
 
-                if rank1 == rank2:
-                    # if ranks are equal then anyone can become child and the parent's rank is increased by one
-                    self.parent[parent2] = parent1
-                    self.rank[parent1] += 1
-                elif rank1 > rank2:
-                    #whichever rank is lower that becomes the child and rank doesnt change
-                    self.parent[parent2] = parent1
-                else:
-                    # whichever rank is lower that becomes the child and rank doesnt change
-                    self.parent[parent1] = parent2
+
+class PathCompressionUnionFind(UnionFind):
+    """
+    Union-Find optimized with path compression.
+    Path compression is applied in find(), flattening the tree for future queries.
+    """
+
+    def find(self, value):
+        """Find with path compression (recursive)."""
+        if value not in self.parent:
+            return None
+        
+        # Find root similar to the normal baseline find function
+        root = value
+        while self.parent[root] is not None:
+            root = self.parent[root]
+
+        # Path compress -> make all the nodes point to the root
+        curr = value
+        while curr != root:
+            parent_curr = self.parent[curr]
+            self.parent[curr] = root
+            curr = parent_curr if parent_curr is not None else root
+        return root
+
+
+class RankUnionFind(UnionFind):
+    """
+    Union-Find optimized with union by rank (approximate tree height).
+    Does not apply path compression.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.rank = {}
+
+    def create_set(self, value):
+        """Create a standalone set and initialize rank to 0."""
+        if value not in self.parent:
+            self.parent[value] = None
+            self.rank[value] = 0
+
+    def union(self, a, b):
+        """Merge by rank: attach smaller-rank tree under larger-rank tree."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        if root_a is None or root_b is None or root_a == root_b:
+            return
+
+        rank_a = self.rank.get(root_a, 0)
+        rank_b = self.rank.get(root_b, 0)
+
+        if rank_a < rank_b:
+            self.parent[root_a] = root_b
+        elif rank_a > rank_b:
+            self.parent[root_b] = root_a
+        else:
+            # Same rank: pick one as new root and increase its rank
+            self.parent[root_b] = root_a
+            self.rank[root_a] = rank_a + 1
+
 
 if __name__ == '__main__':
-    #normal
+    # Demonstration of three variants with small, readable examples
+
+    # 1) Baseline Union-Find (no optimizations)
     uf = UnionFind()
+    for x in [1, 2, 3, 4, 5]:
+        uf.create_set(x)
+    uf.union(1, 2)
+    uf.union(3, 4)
+    uf.union(2, 3)
+    # Expected: 1,2,3,4 connected; 5 separate
+    print("Baseline connected(1,4):", uf.connected(1, 4))  # True
+    print("Baseline connected(1,5):", uf.connected(1, 5))  # False
 
-    #with path compression
-    uf_pc = UnionFind(mode=UnionFind.PATH_COMPRESSION)
+    # 2) Path Compression Union-Find
+    uf_pc = PathCompressionUnionFind()
+    for x in [1, 2, 3, 4, 5]:
+        uf_pc.create_set(x)
+    uf_pc.union(1, 2)
+    uf_pc.union(3, 4)
+    uf_pc.union(2, 3)
+    # After a find, paths should be compressed
+    _ = uf_pc.find(4)
+    print("PathCompression connected(1,4):", uf_pc.connected(1, 4))  # True
+    print("PathCompression connected(4,5):", uf_pc.connected(4, 5))  # False
 
-    #with rank
-    uf_rank = UnionFind(mode=UnionFind.RANK)
-
-    #testing normal
-    uf.createSet(0)
-    uf.createSet(1)
-    uf.find(0)
-    uf.find(1)
-    uf.union(0,2)
-    uf.find(0)
-    uf.find(1)
-    uf.union(0,1)
-    uf.union(1,0)
-    uf.find(0)
-    uf.find(1)
-
-    #testing path compression
-    # uf_pc.createSet(1)
-    # uf_pc.createSet(2)
-    # uf_pc.createSet(3)
-    # uf_pc.createSet(4)
-    # uf_pc.createSet(5)
-    # uf_pc.find(2)
-    # uf_pc.union(2,3)
-    # uf_pc.union(4,5)
-    # uf_pc.union(5,3)
-    # uf_pc.union(1,3)
-    # uf_pc.find(2)
-
-
-    #testing rank
-    # uf_rank.createSet(1)
-    # uf_rank.createSet(2)
-    # uf_rank.createSet(3)
-    # uf_rank.createSet(4)
-    # uf_rank.createSet(5)
-    # uf_rank.find(2)
-    # uf_rank.union(2,3)
-    # uf_rank.union(4,5)
-    # uf_rank.union(5,3)
-    # uf_rank.union(1,3)
-    # uf_rank.find(2)
+    # 3) Rank-based Union-Find (no path compression)
+    uf_rank = RankUnionFind()
+    for x in [1, 2, 3, 4, 5]:
+        uf_rank.create_set(x)
+    uf_rank.union(1, 2)
+    uf_rank.union(3, 4)
+    uf_rank.union(2, 3)
+    print("Rank connected(1,4):", uf_rank.connected(1, 4))  # True
+    print("Rank connected(3,5):", uf_rank.connected(3, 5))  # False
