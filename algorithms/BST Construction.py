@@ -1,6 +1,4 @@
 class BST:
-    leftDirection = "LEFT"
-    rightDirection = "RIGHT"
 
     def __init__(self, value):
         self.value = value
@@ -36,70 +34,36 @@ class BST:
         return False
 
     def remove(self, value):
-        # replace root with left ka rightmost or right ka leftmost
-        path = []
-        if self.contains(value):
-            self.removeUtil(value, path)
+        if value < self.value:
+            if self.left:
+                self.left = self.left.remove(value)
+        elif value > self.value:
+            if self.right:
+                self.right = self.right.remove(value)
+        else:
+            # Found the node to delete
+            if not self.left and not self.right:
+                return None
+            elif self.right:
+                # Replace with in-order successor (min of right subtree)
+                self.value = self._successor()
+                self.right = self.right.remove(self.value)
+            else:
+                # No right child, replace with in-order predecessor (max of left)
+                self.value = self._predecessor()
+                self.left = self.left.remove(self.value)
         return self
 
-    # helper
-    def removeUtil(self, value, path):
-        if value == self.value:
-            # get replacement element
-            if self.right:
-                path.append([self, BST.rightDirection])
-                self.value = self.right.getAndRemoveLeftMostElement(path)
-            elif self.left:
-                path.append([self, BST.leftDirection])
-                self.value = self.left.getAndRemoveRightMostElement(path)
-            elif len(path) > 0:
-                # non root case as if it is root we can just skip it
-                parent, direction = path[-1]
-                if direction == BST.rightDirection:
-                    parent.right = None
-                elif direction == BST.leftDirection:
-                    parent.left = None
-        elif value > self.value:
-            path.append([self, BST.rightDirection])
-            self.right.removeUtil(value, path)
-        else:
-            path.append([self, BST.leftDirection])
-            self.left.removeUtil(value, path)
+    # One step right, then all the way left
+    def _successor(self) -> int:
+        node = self.right
+        while node.left:
+            node = node.left
+        return node.value
 
-    def getAndRemoveLeftMostElement(self, path):
-        if self.left:
-            #go as much left as possible
-            path.append([self, BST.leftDirection])
-            return self.left.getAndRemoveLeftMostElement(path)
-        else:
-            #at this point there may be a right child, but we have to remove this node only
-            value = self.value
-
-            #connect parent to self's right this will remove the node automatically
-            parent,direction = path[-1]
-
-            if direction == BST.leftDirection:
-                parent.left = self.right
-            else:
-                parent.right = self.right
-
-            return value
-
-
-    def getAndRemoveRightMostElement(self, path):
-        if self.right:
-            path.append([self, BST.rightDirection])
-            return self.right.getAndRemoveRightMostElement(path)
-        else:
-            # at this point there may be a left child, but we have to remove this node only
-            value = self.value
-
-            # connect parent to self's left this will remove the node automatically
-            parent, direction = path[-1]
-
-            if direction == BST.leftDirection:
-                parent.left = self.left
-            else:
-                parent.right = self.left
-
-            return value
+    # One step left, then all the way right
+    def _predecessor(self) -> int:
+        node = self.left
+        while node.right:
+            node = node.right
+        return node.value
