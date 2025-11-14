@@ -140,6 +140,184 @@ WHY IT'S LINEAR TIME
 
 
 class Solution:
+    def longestPalindrome_bruteforce(self, s: str) -> str:
+        """
+        Brute Force Approach: Check all possible substrings.
+        
+        Time Complexity: O(N³)
+        - O(N²) substrings to check
+        - O(N) time to verify if each substring is a palindrome
+        
+        Space Complexity: O(1) excluding output
+        """
+        if len(s) <= 1:
+            return s
+        
+        longest = s[0]
+        longest_len = 1
+        
+        # Try all possible substrings
+        for i in range(len(s)):
+            for j in range(i + 1, len(s)):
+                # Check if substring s[i:j+1] is a palindrome
+                substring = s[i:j+1]
+                if substring == substring[::-1]:  # Check if palindrome
+                    if len(substring) > longest_len:
+                        longest = substring
+                        longest_len = len(substring)
+        
+        return longest
+    
+    def longestPalindrome_expand_centers(self, s: str) -> str:
+        """
+        Expand from Centers Approach: For each position, expand outward.
+        
+        Time Complexity: O(N²)
+        - O(N) centers to check (including between characters for even-length palindromes)
+        - O(N) time to expand from each center
+        
+        Space Complexity: O(1) excluding output
+        
+        Key insight: A palindrome can be centered at:
+        - A character (odd length): "aba" centered at 'b'
+        - Between two characters (even length): "abba" centered between the two 'b's
+        """
+        if len(s) <= 1:
+            return s
+        
+        def expand_around_center(left: int, right: int) -> int:
+            """
+            Expand outward from center and return the length of palindrome found.
+            
+            Args:
+                left: Left boundary (inclusive)
+                right: Right boundary (inclusive)
+            
+            Returns:
+                Length of the palindrome
+            """
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                left -= 1
+                right += 1
+            # Return length: (right - left - 1)
+            # Example: "aba", left=0, right=2, after expansion left=-1, right=3
+            # Length = 3 - (-1) - 1 = 3
+            return right - left - 1
+        
+        start = 0
+        max_len = 1
+        
+        for i in range(len(s)):
+            # Case 1: Odd-length palindrome centered at i
+            # Example: "aba" centered at index 1 ('b')
+            len1 = expand_around_center(i, i)
+            
+            # Case 2: Even-length palindrome centered between i and i+1
+            # Example: "abba" centered between indices 1 and 2
+            len2 = expand_around_center(i, i + 1)
+            
+            # Take the longer palindrome
+            current_len = max(len1, len2)
+            
+            if current_len > max_len:
+                max_len = current_len
+                # Calculate start position
+                # For odd: start = i - (len-1)//2
+                # For even: start = i - (len-2)//2
+                # Both can be simplified to: start = i - (current_len - 1) // 2
+                start = i - (current_len - 1) // 2
+        
+        return s[start:start + max_len]
+    
+    def longestPalindrome_dp(self, s: str) -> str:
+        """
+        Dynamic Programming Approach: Top-down memoization (recursive).
+        
+        Time Complexity: O(N²)
+        - Each substring s[i:j+1] is checked at most once
+        - O(N²) substrings total
+        
+        Space Complexity: O(N²) for the memoization cache + O(N) for recursion stack
+        
+        Approach:
+        - Recursive function checks if s[i:j+1] is a palindrome
+        - Memoization avoids recomputing the same subproblems
+        - Track the longest palindrome found during recursion
+        
+        Recurrence:
+        - Base case: i >= j → True (empty string or single character)
+        - If s[i] != s[j] → False (first and last don't match)
+        - Otherwise: is_palindrome(i, j) = is_palindrome(i+1, j-1)
+        
+        Example:
+        String: "babad"
+        is_palindrome(0, 2) for "bab":
+          - s[0] == s[2] ('b' == 'b') ✓
+          - Recursively check is_palindrome(1, 1) for "a" → True
+          - Result: True
+        """
+        if len(s) <= 1:
+            return s
+        
+        n = len(s)
+        # Memoization cache: memo[i][j] = True if s[i:j+1] is a palindrome
+        # None means not computed yet
+        memo = [[None] * n for _ in range(n)]
+        
+        # Track the longest palindrome found
+        start = 0
+        max_len = 1
+        
+        def is_palindrome(i: int, j: int) -> bool:
+            """
+            Recursively check if s[i:j+1] is a palindrome using memoization.
+            
+            Args:
+                i: Start index (inclusive)
+                j: End index (inclusive)
+            
+            Returns:
+                True if s[i:j+1] is a palindrome, False otherwise
+            """
+            # Base case: empty string or single character is always a palindrome
+            if i >= j:
+                return True
+            
+            # Check memoization cache first
+            if memo[i][j] is not None:
+                return memo[i][j]
+            
+            # Recursive case:
+            # s[i:j+1] is a palindrome if:
+            # 1. First and last characters match: s[i] == s[j]
+            # 2. Inner substring s[i+1:j] is also a palindrome
+            if s[i] == s[j]:
+                result = is_palindrome(i + 1, j - 1)
+            else:
+                result = False
+            
+            # Store result in cache
+            memo[i][j] = result
+            
+            # Update longest palindrome if this one is longer
+            nonlocal start, max_len
+            if result:
+                current_len = j - i + 1
+                if current_len > max_len:
+                    start = i
+                    max_len = current_len
+            
+            return result
+        
+        # Check all possible substrings
+        # We check from longest to shortest to potentially find the answer faster
+        # (though we still need to check all to be sure)
+        for i in range(n):
+            for j in range(i, n):
+                is_palindrome(i, j)
+        
+        return s[start:start + max_len]
+    
     def add_hashes(self, s: str) -> str:
         """
         Transform string by inserting '#' between every character.
@@ -158,7 +336,13 @@ class Solution:
 
     def longestPalindrome(self, s: str) -> str:
         """
-        Find the longest palindromic substring using Manacher's Algorithm.
+        Find the longest palindromic substring using Manacher's Algorithm (OPTIMAL).
+        
+        This is the default method that uses Manacher's algorithm for O(N) time.
+        For other approaches, see:
+        - longestPalindrome_bruteforce: O(N³)
+        - longestPalindrome_expand_centers: O(N²)
+        - longestPalindrome_dp: O(N²)
         
         Time Complexity: O(N) where N is the length of the string
         Space Complexity: O(N) for the palindrome_radius array
@@ -272,7 +456,36 @@ class Solution:
         return longest_palindrome
 
 if __name__ == '__main__':
-    s = Solution()
-    print(s.longestPalindrome("babad"))
-    print(s.longestPalindrome("cbbd"))
-    print(s.longestPalindrome("abdabba"))
+    sol = Solution()
+    test_cases = ["babad", "cbbd", "abdabba", "a", "ac", "racecar"]
+    
+    print("=" * 80)
+    print("Testing all approaches for Longest Palindromic Substring")
+    print("=" * 80)
+    
+    for test in test_cases:
+        print(f"\nInput: '{test}'")
+        print("-" * 80)
+        
+        # Brute Force O(N³)
+        result_bf = sol.longestPalindrome_bruteforce(test)
+        print(f"Brute Force (O(N³)):        '{result_bf}'")
+        
+        # Expand from Centers O(N²)
+        result_expand = sol.longestPalindrome_expand_centers(test)
+        print(f"Expand Centers (O(N²)):     '{result_expand}'")
+        
+        # Dynamic Programming O(N²)
+        result_dp = sol.longestPalindrome_dp(test)
+        print(f"Dynamic Programming (O(N²)): '{result_dp}'")
+        
+        # Manacher's Algorithm O(N)
+        result_manacher = sol.longestPalindrome(test)
+        print(f"Manacher's Algorithm (O(N)): '{result_manacher}'")
+        
+        # Verify all methods return the same result
+        results = [result_bf, result_expand, result_dp, result_manacher]
+        if len(set(results)) == 1:
+            print(f"[OK] All methods agree: '{result_manacher}'")
+        else:
+            print(f"[ERROR] Methods disagree! Results: {results}")
