@@ -1,142 +1,110 @@
-import heapq
-from collections import defaultdict, Counter
+"""
+Topological Sort Algorithm
+
+The topological sort algorithm is used to find a linear ordering of nodes in a directed acyclic graph (DAG)
+such that for every directed edge (u, v), node u comes before node v in the ordering.
+
+General Algorithm Approach:
+1. Find all nodes with zero in-degree (no incoming edges)
+2. Add one of these zero in-degree nodes to the result
+3. Remove that node from the graph and decrement the in-degree of all its neighbors
+4. Repeat steps 1-3 until all nodes are processed
+
+If at any point there are no zero in-degree nodes remaining but there are still unprocessed nodes,
+this indicates a cycle exists in the graph, and topological sort is not possible.
+
+The algorithm uses Kahn's algorithm approach:
+- Maintain an in-degree count for each node
+- Use a queue/stack to process zero in-degree nodes
+- As we process nodes, we decrement in-degrees of neighbors
+- When a neighbor's in-degree reaches zero, it becomes eligible for processing
+"""
+
 from typing import List
 
 
-#old method slow
-def getZeroIndegreeNodeAndModifyGraph(indegreeList):
-    zeroIndegreeNode = None
-
-    # find 0 degree node
-    for node in indegreeList:
-        if len(indegreeList[node]) == 0:
-            zeroIndegreeNode = node
-            break
-
-    if zeroIndegreeNode != None:
-        # remove that node from the graph
-        del indegreeList[zeroIndegreeNode]
-
-        # for that node remove its connection
-        for node in indegreeList:
-            if zeroIndegreeNode in indegreeList[node]:
-                indegreeList[node].remove(zeroIndegreeNode)
-
-    # return 0 degree and modified indegree list!
-    return zeroIndegreeNode, indegreeList
-
-
-def topologicalSort(jobs, deps):
-    # init
-    topoSort = []
-    containsCycle = False
-
-    indegreeList = dict()
-    for job in jobs:
-        indegreeList[job] = []
-
-    # construct indegree list
-    for i, j in deps:
-        indegreeList[j].append(i)
-
-    # keep iterating until there is nothing left
-    while jobs:
-        zeroIndegreeJob, indegreeList = getZeroIndegreeNodeAndModifyGraph(indegreeList)
-
-        # if no 0 degree node exists, return empty
-        if zeroIndegreeJob == None:
-            containsCycle = True
-            break
-
-        # else add it to the topo sort list
-        topoSort.append(zeroIndegreeJob)
-        jobs.remove(zeroIndegreeJob)
-
-    # return final topological sorted result
-    return topoSort if not containsCycle else []
-
-# uses heapq and a graph and a reverse graph.. but technically heap is not needed at all since we only store the 0 degree nodes
-def topological_sort(n, edges):
-    # Step 1: Build adjacency list and reverse graph (indegree tracking)
-    graph = defaultdict(list)  # Normal adjacency list
-    reverse_graph = defaultdict(set)  # Reverse graph using sets for fast removal
-
-    for u, v in edges:
-        graph[u].append(v)
-        reverse_graph[v].add(u)  # Reverse edges (store parents)
-
-    # Step 2: Use a Min-Heap to store nodes with zero indegree (heap is not needed at all!)
-    min_heap = []
-    for node in range(n):
-        if node not in reverse_graph:  # Nodes with no incoming edges
-            heapq.heappush(min_heap, node)
-
-    # Step 3: Process nodes in topological order
-    topo_order = []
-    while min_heap:
-        node = heapq.heappop(min_heap)  # Get smallest zero-indegree node
-        topo_order.append(node)
-
-        # Remove this node from the graph
-        for neighbor in graph[node]:
-            reverse_graph[neighbor].remove(node)  # Remove dependency
-            if not reverse_graph[neighbor]:  # If no more parents left
-                heapq.heappush(min_heap, neighbor)
-                del reverse_graph[neighbor]  # Cleanup to avoid memory issues
-
-        del graph[node]  # Remove processed node completely
-
-    # Step 4: Cycle detection
-    if len(topo_order) < n:
-        return []  # Cycle detected (not all nodes were processed)
-
-    return topo_order
-
-# elegant neetcode style
-def topologicalOrder(self, n: int, reverse_edges: List[List[int]]) -> List[int]:
-    adj = [[] for i in range(n)]
+def topological_order(n: int, edges: List[List[int]]) -> List[int]:
+    """
+    Perform topological sort on a directed graph.
+    
+    Args:
+        n: Number of nodes in the graph (nodes are labeled 0 to n-1)
+        edges: List of edges where each edge is [u, v] meaning u -> v (u must come before v)
+    
+    Returns:
+        List of nodes in topological order, or empty list if cycle is detected
+    """
+    # Step 1: Build adjacency list and initialize in-degree array
+    # adj[i] contains all nodes that node i points to (children of node i)
+    adj = [[] for _ in range(n)]
+    
+    # indegree[i] counts how many nodes point to node i (number of dependencies)
     indegree = [0] * n
-    for nxt, pre in reverse_edges:
-        indegree[nxt] += 1
-        adj[pre].append(nxt)
-
+    
+    # Build the graph and count in-degrees
+    for u, v in edges:
+        # Edge u -> v means u must come before v
+        adj[u].append(v)      # Add v as a neighbor of u
+        indegree[v] += 1       # v has one more incoming edge (dependency on u)
+    
+    # Step 2: Initialize result list to store topological order
     output = []
-
-    def dfs(node):
+    
+    # Step 3: Helper function to process a node and its descendants
+    def process_node(node: int):
+        """
+        Process a node with zero in-degree:
+        1. Add it to the output (it has no remaining dependencies)
+        2. Decrement its in-degree (mark as processed)
+        3. For each neighbor, decrement their in-degree
+        4. If a neighbor's in-degree becomes zero, recursively process it
+        """
+        # Add node to topological order (all its dependencies are satisfied)
         output.append(node)
+        
+        # Mark this node as processed by decrementing its in-degree to -1
+        # This is a hack to ensure this node never gets processed again
+        # (since we only process nodes when indegree == 0, and -1 will never satisfy that)
         indegree[node] -= 1
-        for nei in adj[node]:
-            indegree[nei] -= 1
-            if indegree[nei] == 0:
-                dfs(nei)
-
+        
+        # Process all neighbors (nodes that this node points to)
+        for neighbor in adj[node]:
+            # Decrement neighbor's in-degree (one of its dependencies is satisfied)
+            indegree[neighbor] -= 1
+            
+            # If neighbor now has zero in-degree, it's ready to be processed
+            if indegree[neighbor] == 0:
+                process_node(neighbor)
+    
+    # Step 4: Start processing from all nodes with zero in-degree
+    # These are nodes with no dependencies and can be processed first
     for i in range(n):
         if indegree[i] == 0:
-            dfs(i)
-
+            process_node(i)
+    
+    # Step 5: Cycle detection
+    # If we processed all n nodes, we have a valid topological order
+    # Otherwise, there's a cycle (some nodes still have dependencies)
     return output if len(output) == n else []
 
+
 if __name__ == '__main__':
-    # deps = [
-    #     [3, 1],
-    #     [8, 1],
-    #     [8, 7],
-    #     [5, 7],
-    #     [5, 2],
-    #     [1, 4],
-    #     [1, 6],
-    #     [1, 2],
-    #     [7, 6]
-    # ]
-    # jobs = [1, 2, 3, 4, 5, 6, 7, 8]
-    # print(topologicalSort(jobs, deps))
-
-
-    # Example Usage:
+    # Example 1: Valid DAG
+    # Graph: 5 -> 2 -> 3 -> 1
+    #        5 -> 0
+    #        4 -> 0
+    #        4 -> 1
     n = 6
-    edges = [(5, 2), (5, 0), (4, 0), (4, 1), (2, 3), (3, 1)]
-    print(topological_sort(n, edges))  # Output: [4, 5, 0, 2, 3, 1] (or similar valid order)
-
-    # Example with a cycle:
-    edges_with_cycle = [(0, 1), (1, 2), (2, 0)]  # Cycle: 0 → 1 → 2 → 0
-    print(topological_sort(3, edges_with_cycle))  # Output: [] (cycle detected)
+    edges = [[5, 2], [5, 0], [4, 0], [4, 1], [2, 3], [3, 1]]
+    result = topological_order(n, edges)
+    print(f"Topological order: {result}")
+    # Expected: A valid ordering where 4 and 5 come before their children,
+    #           and 2 comes before 3, 3 comes before 1, etc.
+    # Example: [4, 5, 0, 2, 3, 1] or [5, 4, 2, 0, 3, 1]
+    
+    # Example 2: Graph with cycle
+    # Cycle: 0 -> 1 -> 2 -> 0
+    edges_with_cycle = [[0, 1], [1, 2], [2, 0]]
+    result = topological_order(3, edges_with_cycle)
+    print(f"Graph with cycle: {result}")
+    # Expected: [] (empty list because cycle is detected)
