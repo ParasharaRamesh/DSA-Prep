@@ -57,7 +57,7 @@ Algorithm Steps:
    a. Set disc[u] = low[u] = current_time
    b. Explore neighbors v:
       - Skip parent (avoid going back up the tree)
-      - If v not discovered: DFS(v), then check articulation condition
+      - If v not discovered: DFS(v) -> update low[u] comparing with low[v], then check articulation condition
       - If v already discovered: Update low[u] with back edge
    c. Check if u is root with multiple children
 3. Return all articulation points found
@@ -75,7 +75,7 @@ This condition means:
 - Removing u disconnects v's subtree → u is articulation point
 
 Why <= (non-strict inequality)?
-- If low[v] == disc[u]: v's subtree can reach u, but NOT u's ancestors
+- If disc[u] == low[v]: v's subtree can reach u, but NOT u's ancestors
 - v entirely depends on u for connectivity to the rest of the graph
 - Removing u still disconnects v's subtree → u is articulation point
 - If low[v] < disc[u]: v can reach u's ancestors → u is NOT articulation point

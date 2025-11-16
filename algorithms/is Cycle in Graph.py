@@ -489,7 +489,7 @@ def is_cyclic_directed_wrong_parent_tracking(graph, n):
 # DIRECTED GRAPHS - METHOD 2: DFS WITH RECURSION STACK (Recursive)
 # ============================================================================
 
-def has_cycle_directed(graph, node, visited, recursion_stack):
+def has_cycle_directed(graph, node, visited, on_stack):
     """
     Helper function for recursive DFS cycle detection in directed graph.
     
@@ -527,19 +527,19 @@ def has_cycle_directed(graph, node, visited, recursion_stack):
     """
     # Mark as visited (permanent) and add to recursion stack (temporary)
     visited[node] = True
-    recursion_stack[node] = True
+    on_stack[node] = True
 
     for neighbor in graph[node]:
         if not visited[neighbor]:
             # Continue DFS - if cycle found in subtree, propagate up
-            if has_cycle_directed(graph, neighbor, visited, recursion_stack):
+            if has_cycle_directed(graph, neighbor, visited, on_stack):
                 return True
-        elif recursion_stack[neighbor]:
+        elif on_stack[neighbor]:
             # Found node in recursion stack → back edge → cycle!
             return True
 
     # Backtrack: remove from recursion stack (but keep in visited)
-    recursion_stack[node] = False
+    on_stack[node] = False
     return False
 
 
@@ -560,12 +560,12 @@ def is_cyclic_directed_recursive(graph, n):
     Space: O(V) for recursion stack
     """
     visited = [False] * n
-    recursion_stack = [False] * n  # Tracks nodes in current DFS path
+    on_stack = [False] * n  # Tracks nodes in current DFS path
 
     # Check all components (handle disconnected graph)
     for node in range(n):
         if not visited[node]:
-            if has_cycle_directed(graph, node, visited, recursion_stack):
+            if has_cycle_directed(graph, node, visited, on_stack):
                 return True
     return False
 

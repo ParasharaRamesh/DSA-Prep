@@ -18,7 +18,12 @@ class SCC:
             - from the src scc ( i.e. the last finishing node) we can no longer visit the other scc's
         3. do a dfs in the order of last finishing and collect each of the scc's
             - now doing a dfs will only yield an scc as we then have to move onto the next in the finishing order
-     '''
+
+    NOTE ON SCC ROOT IN KOSARAJU:
+        - In Kosaraju's algorithm, the 'SCC root' is simply the node from which a new DFS starts when processing the reversed graph in finishing order.
+        - This SCC root is NOT necessarily the node with outgoing edges to other SCCs. Any node in the SCC can have such edges.
+        - The SCC root is the entry point for DFS during the collection phase of the SCC in the reversed graph, i.e., the first node picked for DFS that has not already been visited.
+    '''
 
     def kosaraju(self, graph=None):
         if graph == None:

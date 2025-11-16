@@ -25,6 +25,7 @@ KEY CONCEPTS
 3. STRONGLY CONNECTED COMPONENT (SCC)
    - All nodes in an SCC will eventually have the same low-link value
    - The root of an SCC is the node with disc[u] == low[u]
+    . the "SCC root" is the node in a strongly connected component (SCC) with the lowest discovery time (i.e., the node that was visited first in DFS within that component).
    - Example: In graph A→B→C→A, all three nodes form one SCC with low[A]=low[B]=low[C]
 
 ================================================================================
@@ -54,16 +55,27 @@ WHY IT WORKS - DETAILED EXPLANATION
 RULE 1: Tree Edge Update (low[u] = min(low[u], low[v]))
    When exploring u → v and v is not yet discovered:
    - After completely exploring v's subtree, update u's low-link value
-   - If v belongs to same SCC as u, their low values will converge
-   - If v belongs to different SCC, u's low value stays higher
+   - THERE IS A CHANCE THAT EVENTUALLY low[u] = low[v]. But it could also be that v starts a new SCC all-together.
+        a. If they belong to the same SCC, then definitely low[u] = low[v] eventually.
+        b. If they DO NOT belong to the same SCC, then low[u] != low[v]. As v may start/belong to another SCC. In which case u's low value should continue to stay as is.
+        c. Note that u was Discovered before v therefore:
+            - it has a lower disc[u] < disc[v]
+            - it initially starts out with a lower low link value also low[u] < low[v]
+            - anything which is explored from v will always have a larger discovery time and low link value (atleast at the beginning before they all converge)
+    - Combining all 3 cases after dfs(v) is completely done, we get the update rule:
+        - low[u] = min(low[u], low[v])
+    - Interesting thing is that inside an SCC, v might find out another path which leads back to u (i.e. a back edge/cycle).
+    - So v's low link value would have already been updated to the correct lowest low link value for that SCC using the idea #2 given below.
    
-   Example:
-   Graph: 0 → 1 → 2 → 3
+   Examples:
+   a. Graph: 0 → 1 → 2 → 3
    Suppose nodes 1,2,3 form an SCC (with cycles between them)
    - After exploring 1→2→3, all get low = 1 (lowest in their SCC)
    - When backtracking to 0: low[0] = min(low[0], low[1]) = min(0, 1) = 0
    - Since disc[0] = 0 = low[0], node 0 is root of its own SCC
    - Node 0 does NOT belong to the SCC containing 1,2,3
+   b. Refer to example here => https://www.youtube.com/watch?v=wUgWX0nc4NY&t=666s
+            . Here after 4,5,6 is explored all will have the same low link value as 4, and then when it goes back to 3. 3 will continue to keep its low link value as 3 => it is not a part of 4's SCC!
 
 RULE 2: Back Edge Update (low[u] = min(low[u], disc[v]))
    When exploring u → v and v is already on the stack:
