@@ -20,6 +20,7 @@ Constraints:
 strs[i] contains only UTF-8 characters.
 
 '''
+from typing import List
 
 
 class Solution:

@@ -28,7 +28,7 @@ Constraints:
 '''
 from collections import defaultdict
 from typing import List
-
+from sortedcontainers import SortedSet
 
 class Solution:
     def longestConsecutive(self, nums: List[int]) -> int:
@@ -55,6 +55,7 @@ class Solution:
 
         return longest
 
+        
     #neetcode solution O(n)
     def longestConsecutive_neetcode(self, nums: List[int]) -> int:
         mp = defaultdict(int)
@@ -67,3 +68,27 @@ class Solution:
                 mp[num + mp[num + 1]] = mp[num]
                 res = max(res, mp[num])
         return res
+
+    # new solution using SortedSet
+    def longestConsecutive_sortedset(self, nums: List[int]) -> int:
+        if len(nums) == 0:
+            return 0
+
+        ordered = SortedSet(nums)
+        ordered_list = list(ordered)
+
+        longest = 1
+
+        curr_len = 1
+        curr = ordered[0]
+
+        for num in ordered_list[1:]:
+            if num == curr + 1:
+                curr = num
+                curr_len += 1
+                longest = max(longest, curr_len)
+            else:
+                curr_len = 1
+                curr = num
+
+        return longest
