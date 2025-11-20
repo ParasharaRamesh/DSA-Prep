@@ -27,6 +27,21 @@ from typing import *
 
 
 class Solution:
+    '''
+    Why this works:
+    The area is calculated as min(height[left], height[right]) * (right - left).
+    The height of the container is limited by the shorter line.
+    
+    If height[left] < height[right], the left line is the bottleneck.
+    - If we move the right pointer inwards, the width decreases.
+    - The height will be min(height[left], height[new_right]). Since height[left] is already the shorter one,
+      the new height cannot possibly exceed height[left].
+    - So, moving the right pointer (the taller one) guarantees a smaller or equal area (less width, same or less height).
+    
+    Therefore, to potentially find a larger area, we MUST move the shorter pointer. 
+    We don't know if the next line will be taller, but we know that keeping the current shorter line 
+    and moving the other side is guaranteed to not give a better result.
+    '''
     def maxArea(self, heights: List[int]) -> int:
         start = 0
         end = len(heights) - 1
@@ -42,8 +57,8 @@ class Solution:
             else:
                 end -= 1
 
-
         return ma
+
     def maxArea_suboptimal(self, heights: List[int]) -> int:
         left = 0
         right = len(heights) - 1
