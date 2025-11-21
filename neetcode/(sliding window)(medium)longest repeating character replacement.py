@@ -34,22 +34,48 @@ from collections import defaultdict
 
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
-        max_len = 0
-        counts = defaultdict(int)
-        start, end = 0, 0
-
-        # init
-        counts[s[end]] = 1
+        '''
+        Sliding Window Approach:
+        
+        The key insight is that a window is valid if:
+            (window_size) - (frequency of most common character) <= k
+        
+        This works because:
+        - If we have a window of size n with the most frequent character appearing f times,
+          then we need to replace (n - f) characters to make all characters the same.
+        - We can do this replacement if (n - f) <= k.
+        
+        Algorithm:
+        1. Expand the window (move 'end' pointer) as long as the window is valid.
+        2. When the window becomes invalid, shrink it (move 'start' pointer) until it's valid again.
+        3. Track the maximum valid window size seen.
+        
+        Time Complexity: O(n) where n is the length of the string
+        Space Complexity: O(26) = O(1) for the character frequency map (only uppercase letters)
+        '''
+        max_len = 0  # Stores the maximum length of valid substring found so far
+        counts = defaultdict(int)  # Frequency map of characters in the current window
+        start, end = 0, 0  # Two pointers defining the sliding window [start, end]
 
         while end < len(s):
-            # print(f"out | start: {start}, end: {end}")
+            # Inner loop: Expand the window as long as it remains valid
+            # A window is valid when: (window_size) - (max_frequency) <= k
+            # This means we can replace at most k characters to make all characters the same
             while (end < len(s)) and ((end - start + 1) - max(counts.values()) <= k):
+                # Add the current character to our frequency map
+                counts[s[end]] += 1
+                
+                # Update the maximum length with the current valid window size
                 max_len = max(max_len, end - start + 1)
-                # print(f"in | max_len: {max_len}, start: {start}, end: {end}, window: {end-start+1}, counts: {counts}")
+                
+                # Expand the window by moving the end pointer
                 end += 1
-                if end < len(s):
-                    counts[s[end]] += 1
+            
+            # Window is now invalid, so shrink it from the left
+            # Remove the leftmost character from the frequency map
             counts[s[start]] -= 1
+            
+            # Move the start pointer to shrink the window
             start += 1
 
         return max_len

@@ -60,6 +60,21 @@ class Solution:
 
         return False
 
+    # neetcode sliding window solution 
+    def containsNearbyDuplicate_slidingwindow_nc(self, nums: List[int], k: int) -> bool:
+        window = set()
+        L = 0
+
+        for R in range(len(nums)):
+            if R - L > k:
+                window.remove(nums[L])
+                L += 1
+            if nums[R] in window:
+                return True
+            window.add(nums[R])
+
+        return False
+
     # using dictionary
     def containsNearbyDuplicate_dict(self, nums: List[int], k: int) -> bool:
         unique_nums = defaultdict(list)
