@@ -18,7 +18,7 @@ Constraints:
 1 <= temperatures.length <= 1000.
 1 <= temperatures[i] <= 100
 
-Insights: monotonic stack
+Insights: monotonic stack (monotonically decreasing) - next greater element
 
 '''
 from typing import List
@@ -26,27 +26,21 @@ from typing import List
 
 class Solution:
     def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
-        res = [0] * len(temperatures)
-
-        stack = [(temperatures[0], 0)] # temp, index
-
-        for i in range(1, len(temperatures)):
-            temp = temperatures[i]
-
-            if not stack:
-                stack.append((temp, i))
-                continue
-
-            if stack[-1][0] >= temp:
-                stack.append((temp, i))
-            else:
-                while stack and stack[-1][0] < temp:
-                    ele, j = stack.pop()
-                    res[j] = i - j
-                stack.append((temp, i))
-
-        while stack:
-            ele, k = stack.pop()
-            res[k] = 0
-
+        '''
+        Finds the number of days until a warmer temperature for each day.
+        Uses a monotonically decreasing stack to track temperatures waiting for a warmer day.
+        '''
+        res = [0] * len(temperatures)  # default to 0 (no warmer day found)
+        stack = []  # stores (index, temperature) pairs
+        
+        for i, temp in enumerate(temperatures):
+            # if current temp violates monotonically decreasing stack, keep popping and update results
+            while stack and stack[-1][1] < temp:
+                prev_i, prev_temp = stack.pop()
+                res[prev_i] = i - prev_i  # days until warmer temperature
+            
+            # add current day to maintain monotonically decreasing stack
+            stack.append((i, temp))
+        
+        # remaining elements in stack have no warmer day (already initialized to 0)
         return res
