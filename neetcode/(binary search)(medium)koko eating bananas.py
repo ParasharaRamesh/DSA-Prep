@@ -39,7 +39,7 @@ class Solution:
 
     def minEatingSpeed(self, piles: List[int], h: int) -> int:
         l = 1
-        r = sum(piles)
+        r = max(piles)
 
         while l <= r:
             k = l + (r - l) // 2
