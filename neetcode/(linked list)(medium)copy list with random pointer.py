@@ -1,4 +1,4 @@
-'''
+ '''
 You are given the head of a linked list of length n. Unlike a singly linked list, each node contains an additional pointer random, which may point to any node in the list, or null.
 
 Create a deep copy of the list.
@@ -48,7 +48,23 @@ class Solution:
         curr = head
         copy_head, copy_curr = None, None
 
-        # make copy and get intertwined
+        '''
+        PHASE 1: Create intertwined list structure
+        ===========================================
+        Create a copy node for each original node and interleave them:
+        Original: A -> B -> C -> None
+        After:    A -> A' -> B -> B' -> C -> C' -> None
+        
+        Where A' is copy of A, B' is copy of B, etc.
+        
+        Key insight: By placing each copy immediately after its original,
+        we maintain a direct link: original.next = copy, copy.next = original.next
+        This allows us to easily find the copy of any node in Phase 2.
+        
+        Example:
+        Original list: [3] -> [7] -> [4]
+        After Phase 1: [3] -> [3'] -> [7] -> [7'] -> [4] -> [4']
+        '''
         while curr:
             if not copy_head:
                 copy_head = Node(curr.val)
@@ -64,7 +80,28 @@ class Solution:
 
             curr = copy_curr.next
 
-        #  start from head assign its random to its next's random .next
+        '''
+        PHASE 2: Set random pointers for copied nodes
+        ==============================================
+        Now that we have intertwined structure, we can set random pointers.
+        
+        For each original node:
+        - curr = original node
+        - curr.next = copy node (our intertwined structure)
+        - curr.random = some original node (or None)
+        - curr.random.next = copy of that random node (due to intertwining)
+        
+        Therefore: copy.random = curr.next.random = curr.random.next
+        
+        Example:
+        If original node A has random pointer to C:
+        A.random = C (original)
+        A.next = A' (copy of A)
+        C.next = C' (copy of C, due to intertwining)
+        So: A'.random = A.random.next = C.next = C' ✓
+        
+        We skip by 2 (curr.next.next) to only visit original nodes.
+        '''
         curr = head
         while curr and curr.next:
             if curr.random:
@@ -74,7 +111,27 @@ class Solution:
 
             curr = curr.next.next
 
-        # change only the next pointers from the new list
+        '''
+        PHASE 3: Separate the copied list from original list
+        =====================================================
+        Currently: A -> A' -> B -> B' -> C -> C' -> None
+        Goal:      A' -> B' -> C' -> None (and restore original if needed)
+        
+        We traverse only the copied nodes (starting from copy_head).
+        For each copy node:
+        - copy_curr.next currently points to next original node
+        - copy_curr.next.next points to next copy node
+        - So we update: copy_curr.next = copy_curr.next.next
+        
+        Example:
+        Before: A' -> B -> B' -> C -> C' -> None
+        A'.next = B, B.next = B'
+        After:  A' -> B' -> C' -> None
+        A'.next = A'.next.next = B.next = B' ✓
+        
+        Note: This only fixes the copy list. Original list is modified but
+        we don't restore it (problem doesn't require it).
+        '''
         copy_curr = copy_head
 
         while copy_curr and copy_curr.next:
@@ -84,6 +141,30 @@ class Solution:
 
         # return the new list
         return copy_head
+
+    def copyRandomList_hashmap(self, head: Optional[Node]) -> Optional[Node]:
+        old_2_new = dict()
+
+        # make new nodes
+        curr = head
+        while curr:
+            old_2_new[curr] = Node(curr.val)
+            curr = curr.next
+
+        # make the deepcopy
+        curr = head
+        while curr:
+            new_curr = old_2_new[curr]
+
+            if curr.next:
+                new_curr.next = old_2_new[curr.next]
+            
+            if curr.random:
+                new_curr.random = old_2_new[curr.random]
+
+            curr = curr.next
+
+        return old_2_new[head] if head else None
 
 if __name__ == '__main__':
     three = Node(3)
