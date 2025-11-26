@@ -25,7 +25,21 @@ class ListNode:
         self.next = next
 
 class Solution:
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+    def reverseList_iterative(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if not head:
+            return None
+
+        curr = head
+        prev = None
+
+        while curr:
+            after = curr.next
+            curr.next = prev
+            prev = curr
+            curr = after
+        return prev
+
+    def reverseList_recursive(self, head: Optional[ListNode]) -> Optional[ListNode]:
         if head == None:
             return None
 
