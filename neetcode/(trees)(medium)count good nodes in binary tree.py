@@ -36,21 +36,15 @@ class TreeNode:
 for a node x the path from root -> x should not have anything greater than x
 '''
 class Solution:
-    def dfs(self, curr, maxInPathSoFar):
-        if not curr:
-            return 0
-
-        if curr.val < maxInPathSoFar:
-            # Bad case
-            return self.dfs(curr.left, maxInPathSoFar) + self.dfs(curr.right, maxInPathSoFar)
-        else:
-            maxInPathSoFar = curr.val
-            return 1 + self.dfs(curr.left, maxInPathSoFar) + self.dfs(curr.right, maxInPathSoFar)
-
     def goodNodes(self, root: TreeNode) -> int:
-        if not root:
-            return 0
+        def count(node, max_so_far):
+            if not node:
+                return 0
 
-        return self.dfs(root, root.val)
+            if node.val >= max_so_far:
+                return 1 + count(node.left, node.val) + count(node.right, node.val) 
+            
+            return count(node.left, max_so_far) + count(node.right, max_so_far)
 
+        return count(root, root.val)
 
