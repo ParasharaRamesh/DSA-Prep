@@ -65,6 +65,8 @@ class Solution:
         while q:
             qLen = len(q)
             level = []
+            # basically we know that everything in the queue at this moment is what contributes to all of the next level
+            # therefore it is essential that all of them are popped off and added to the level while its children will be added to the end of the queue for the next level to pop it off
             for i in range(qLen):
                 node = q.popleft()
                 if node:
