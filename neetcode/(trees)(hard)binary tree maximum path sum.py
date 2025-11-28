@@ -41,26 +41,29 @@ class TreeNode:
 
 
 class Solution:
+    # my solution with caching
+    def __init__(self):
+        self.max_path_sum_at = defaultdict(int)
+
     def get_max_path_sum(self, node):
-        paths = []
+        if not node:
+            return 0
 
-        def helper(node, curr_path):
-            if not node:
-                return
+        key = id(node)
+        if key in self.max_path_sum_at:
+            return self.max_path_sum_at[key]
 
-            paths.append(sum(curr_path + [node.val]))
+        left_max = self.get_max_path_sum(node.left)
+        right_max = self.get_max_path_sum(node.right)
 
-            if node.left:
-                helper(node.left, curr_path + [node.val])
+        self.max_path_sum_at[key] = max(
+            node.val,
+            node.val + left_max,
+            node.val + right_max
+        )
+        return self.max_path_sum_at[key]
 
-            if node.right:
-                helper(node.right, curr_path + [node.val])
-
-        helper(node, [])
-        return max(paths)
-
-    # TLE :(
-    def maxPathSum_tle(self, root: Optional[TreeNode]) -> int:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
         if not root:
             return float("-inf")
 
@@ -83,30 +86,6 @@ class Solution:
             left_max_path_sum + root.val + right_max_path_sum
         )
         return max(max_sum_with_root, self.maxPathSum(root.left), self.maxPathSum(root.right))
-
-    # Optimal O(n) solution !
-    def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        max_sum = float("-inf")
-
-        def helper(node):
-            # we use nonlocal whenever we want to update a variable inside a nested function.
-            nonlocal max_sum
-
-            if not node:
-                return 0
-
-            # take max with 0, because the path sum can be negative
-            left_max = max(helper(node.left), 0)
-            right_max = max(helper(node.right), 0)
-
-            # this is to consider all paths passing through node
-            max_sum = max(max_sum, left_max + node.val + right_max)
-
-            #max with only one of it, because this is the value considering that we keep one end as 'node'and we continue downwards to the best path
-            return node.val + max(left_max, right_max)
-
-        helper(root)
-        return max_sum
 
     # same O(n) solution but more easier to reason about / read
     def maxPathSum_optimal(self, root: Optional[TreeNode]) -> int:
