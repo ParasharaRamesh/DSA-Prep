@@ -56,4 +56,26 @@ class Solution:
         self.helper(nums[1:], curr_subset + [nums[0]], all_subsets)
         self.helper(nums[1:], curr_subset, all_subsets)
 
+    def subsets_backtracking(self, nums):
+        res = []
+
+        def helper(i, subset):
+            if i == len(nums):
+                res.append(subset[:])
+                return 
+
+            # exclude
+            helper(i+1, subset)
+
+            # include
+            subset.append(nums[i])
+            helper(i + 1, subset)   
+            subset.pop()
+
+        helper(0, [])
+        return res
+
+if __name__ == "__main__":
+    s = Solution()
+    print(s.subsets_backtracking([1,2,3]))  
 
