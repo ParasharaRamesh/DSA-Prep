@@ -26,20 +26,25 @@ class Solution:
 
     # Backtracking solution
     def permute_backtracking(self, nums: List[int]) -> List[List[int]]:
-        self.res = []
-        self.backtrack(nums, 0)
-        return self.res
+        res = []
 
-    def backtrack(self, nums: List[int], idx: int):
-        if idx == len(nums):
-            self.res.append(nums[:])
-            return
+        def helper(i):
+            # if you have reached the end append to the list of permutations
+            if i == len(nums):
+                res.append(nums.copy())
+                return 
 
-        # at each index try all other indexes and then go down the recursion hierarchy and then in the end backtrack
-        for i in range(idx, len(nums)):
-            nums[idx], nums[i] = nums[i], nums[idx]
-            self.backtrack(nums, idx + 1)
-            nums[idx], nums[i] = nums[i], nums[idx]
+            # if not take each 
+            for j in range(i, len(nums)):
+                # try the jth char in the ith place
+                nums[i], nums[j] = nums[j], nums[i]
+                # go into recursion
+                helper(i+1)
+                # revert the backtracking
+                nums[i], nums[j] = nums[j], nums[i]
+            
+        helper(0)
+        return res
 
     # Johsnson trotter algorithm (only if the elements are comparable )
     def permute_jt(self, nums: List[int]) -> List[List[int]]:
