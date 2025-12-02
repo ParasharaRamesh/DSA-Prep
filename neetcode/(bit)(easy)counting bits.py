@@ -19,7 +19,7 @@ Constraints:
 
 0 <= n <= 1000
 '''
-
+from typing import List
 
 class Solution:
     def count(self, n):
@@ -30,5 +30,18 @@ class Solution:
 
         return res
 
-    def countBits(self, n: int) -> List[int]:
+    def countBits_naive(self, n: int) -> List[int]:
         return [self.count(num) for num in range(0, n + 1)]
+
+    def countBits(self, n: int) -> List[int]:
+        res = [0] * (n + 1)
+
+        for i in range(1, n + 1):
+            pow2 = i.bit_length() - 1
+
+            #recursion is dp[n] = 1 + dp[n-2**(MSB - 1)]
+            res[i] = 1 + res[i - (1 << pow2)]
+
+        return res
+
+    
