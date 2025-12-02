@@ -69,7 +69,27 @@ class Solution:
             )
         )
 
+    # naive way of doing it 
+    def combinationSum2_naive(self, nums: List[int], target: int) -> List[List[int]]:
+        # nums = list(set(nums))
+        res = set()
+
+        def helper(i, combo_sum, combo):
+            if combo_sum == target:
+                res.add(tuple(sorted(combo)))
+                return 
+
+            if i == len(nums) or combo_sum > target:
+                return
+
+            helper(i+1, combo_sum + nums[i], combo + [nums[i]])
+            helper(i+1, combo_sum, combo[:])
+
+        helper(0, 0, [])
+        return [list(combo) for combo in list(res)]
+
 if __name__ == '__main__':
     s = Solution()
-    print(s.combinationSum2([1,2,3,4,5], 7)) #expected [[1,2,4],[2,5],[3,4]]
-    print(s.combinationSum2([9,2,2,4,6,1,5], 8)) #expected [[1,2,5],[2,2,4],[2,6]]
+    # print(s.combinationSum2([1,2,3,4,5], 7)) #expected [[1,2,4],[2,5],[3,4]]
+    # print(s.combinationSum2([9,2,2,4,6,1,5], 8)) #expected [[1,2,5],[2,2,4],[2,6]]
+    print(s.combinationSum2_naive([1,2,3,4,5], 7)) #expected [[1,2,4],[2,5],[3,4]]
