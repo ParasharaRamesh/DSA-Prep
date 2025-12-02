@@ -35,7 +35,7 @@ class Solution:
 
         return True
 
-    def partition(self, s: str) -> List[List[str]]:
+    def partition_recursive(self, s: str) -> List[List[str]]:
         res = []
 
         def helper(s, splits=[]):
@@ -56,4 +56,21 @@ class Solution:
                     helper(rest, splits + [part])
 
         helper(s, [])
+        return res
+
+    def partition(self, s: str) -> List[List[str]]:
+        res = []
+
+        def helper(i, splits):
+            if i == len(s):
+                res.append(splits.copy())
+                return
+
+            for j in range(i, len(s)):
+                part = s[i:j+1]
+                if self.is_palindrome(part):
+                    helper(j+1, splits + [part])
+
+
+        helper(0, [])
         return res
