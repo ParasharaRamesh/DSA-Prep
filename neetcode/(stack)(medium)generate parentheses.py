@@ -40,3 +40,21 @@ class Solution:
 
         helper(n - 1, n, ["("], "(")
         return combos
+
+    def generateParenthesis_alternative(self, n: int) -> List[str]:
+        combos = set()
+
+        def helper(num_open, num_close, combo):
+            if num_open == 0 and num_close == 0:
+                combos.add(combo)
+                return 
+
+            if num_open > 0:
+                helper(num_open - 1 , num_close, combo + "(")
+
+            # no need for stack in this case we can only add a closing bracket only if it is more in count than the number of open brackets
+            if num_close > num_open:
+                helper(num_open, num_close - 1, combo + ")")            
+
+        helper(n-1, n, "(")
+        return list(combos)
