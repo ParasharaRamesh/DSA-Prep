@@ -723,6 +723,35 @@ def has_cycle_linked_list(head):
     
     return False  # Fast reached end, no cycle
 
+# ============================================================================
+# HASHSET APPROACH (Visited Set)
+# ============================================================================
+
+def has_cycle_linked_list_hashset(head):
+    """
+    Detects cycle in a linked list using a Hashset (Visited Set).
+    
+    Approach:
+    - Traverse the list and add each node to a set.
+    - If we encounter a node that is already in the set, a cycle exists.
+    
+    NOTE ON GENERAL GRAPHS:
+    - This simple 'visited set' approach works for Linked Lists because each node 
+      has at most one outgoing edge.
+    - For general graphs (Directed/Undirected), this approach gives FALSE POSITIVES.
+      In a graph, we might visit a node multiple times from different paths 
+      (e.g., A->B->C and A->C). This is valid and not a cycle.
+      For graphs, we must distinguish between "visited in current path" vs 
+      "visited in previous path".
+    """
+    visited = set()
+    curr = head
+    while curr:
+        if curr in visited:
+            return True
+        visited.add(curr)
+        curr = curr.next
+    return False
 
 # Example linked list node class for testing
 class ListNode:
