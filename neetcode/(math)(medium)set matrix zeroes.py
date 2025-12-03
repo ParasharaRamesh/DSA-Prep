@@ -65,6 +65,7 @@ class Solution:
                 first_col_has_zero = True
                 break
 
+        # mark the row and the column to be zeroed out by using the first row and column
         for i in range(1, rows):
             for j in range(1, cols):
                 if matrix[i][j] == 0:
