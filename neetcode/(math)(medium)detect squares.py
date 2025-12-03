@@ -40,20 +40,19 @@ from collections import defaultdict
 class DetectSquares:
     def __init__(self):
         self.pt_count = defaultdict(int)
-        self.pts = []
 
     def add(self, point: List[int]) -> None:
-        self.pts.append(point)
         self.pt_count[tuple(point)] += 1
 
     def count(self, point: List[int]) -> int:
         res = 0
         x, y = point
+        other_points = list(self.pt_count.keys())
 
-        for ox, oy in self.pts:
+        for other_point in other_points:
+            ox, oy = other_point
             if (abs(ox - x) != abs(oy - y)) or x == ox or y == oy:
                 continue
 
-            res += self.pt_count[(x, oy)] * self.pt_count[(ox, y)]
-
+            res += self.pt_count[(ox, oy)] * self.pt_count[(x, oy)] * self.pt_count[(ox, y)]
         return res
