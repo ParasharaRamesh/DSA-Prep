@@ -25,16 +25,16 @@ Constraints:
 dictionary[i] and s consists of only lowercase English letters
 dictionary contains distinct words
 
-# Solution Insights:
-# - Use DFS + memoization to find the minimum number of extra characters by either:
-#   (a) skipping the current character (counting as extra),
-#   (b) matching dictionary words starting at the current index.
-# - Use a Trie for fast lookup of dictionary words as prefixes to optimize matching.
-#
-# Recurrence: For each index, try both skipping (add 1 to extra) and consuming any trie-matched words.
-#
-# Time Complexity:
-#   O(N^2) with Trie optimization: For each position, search all possible substrings as prefixes (max word length L), leveraging Trie lookup and memoization (N = len(s)).
+Solution Insights:
+- Use DFS + memoization to find the minimum number of extra characters by either:
+  (a) skipping the current character (counting as extra),
+  (b) matching dictionary words starting at the current index.
+- Use a Trie for fast lookup of dictionary words as prefixes to optimize matching.
+
+Recurrence: For each index, try both skipping (add 1 to extra) and consuming any trie-matched words.
+
+Time Complexity:
+  O(N^2) with Trie optimization: For each position, search all possible substrings as prefixes (max word length L), leveraging Trie lookup and memoization (N = len(s)).
 
 
 '''
