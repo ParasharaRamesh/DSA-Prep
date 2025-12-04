@@ -110,6 +110,42 @@ class RankUnionFind(UnionFind):
             self.parent[root_b] = root_a
             self.rank[root_a] = rank_a + 1
 
+class SizeUnionFind(UnionFind):
+    """
+    Similar to UF by rank, instead of keeping track of the rank you can keep track of the size of components inside one connected component
+    """
+    def __init__(self):
+        super().__init__()
+        self.size = {}
+
+    def create_set(self, value):
+        """Create a standalone set and initialize rank to 0."""
+        if value not in self.parent:
+            self.parent[value] = None
+            self.size[value] = 1 # there is one node in its own connected component so far
+
+    def union(self, a, b):
+        """Merge by size: attach smaller-size tree under larger-size tree."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        if root_a is None or root_b is None or root_a == root_b:
+            return
+
+        size_a = self.size.get(root_a, 0)
+        size_b = self.size.get(root_b, 0)
+
+        if size_a <= size_b:
+            # make a's parent as b because a is smaller
+            self.parent[root_a] = root_b
+            self.size[root_b] += self.size[root_a]
+        elif size_a > size_b:
+            self.parent[root_b] = root_a
+            self.size[root_a] += self.size[root_b]
+
+    def get_size(self, node) :
+        """getting the size of the connected component node belongs to"""
+        parent = self.find(node)
+        return self.size[parent]
 
 if __name__ == '__main__':
     # Demonstration of three variants with small, readable examples
