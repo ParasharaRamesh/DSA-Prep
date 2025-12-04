@@ -35,7 +35,48 @@ class Solution:
         valid_j = (j >= 0) and (j < COLS)
         return valid_i and valid_j
 
+    # using recursive dfs
     def numIslands(self, grid: List[List[str]]) -> int:
+        all_land = set()
+        ROWS = len(grid)
+        COLS = len(grid[0])
+
+        # keep track of all land
+        for i in range(ROWS):
+            for j in range(COLS):
+                if grid[i][j] == "1":
+                    all_land.add((i, j))
+
+        # all directions
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+        # now do dfs and keep removing from this
+        count = 0
+
+        def dfs(land):
+            if land not in all_land:
+                return
+
+            all_land.remove(land)
+
+            x, y = land
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                is_in_bounds = self.isValid(nx, ny, ROWS, COLS)
+                is_land = (nx, ny) in all_land
+                if is_in_bounds and is_land:
+                    dfs((nx, ny))
+
+
+        while all_land:
+            land = next(iter(all_land))
+            dfs(land)
+            count += 1
+
+        return count
+
+    # explicit dfs with a stack, essentially can do bfs too here or even multisource bfs/dfs
+    def numIslands_explicit_dfs(self, grid: List[List[str]]) -> int:
         all_land = set()
         ROWS = len(grid)
         COLS = len(grid[0])
@@ -72,7 +113,7 @@ class Solution:
 
         return count
 
-#Union find NC solution
+# Union find NC solution
 class DSU:
     def __init__(self, n):
         self.Parent = list(range(n + 1))
@@ -111,6 +152,7 @@ class UnionFindSolution:
         for r in range(ROWS):
             for c in range(COLS):
                 if grid[r][c] == '1':
+                    # essentially everything is a seperate island and then you try to decrement
                     islands += 1
                     for dr, dc in directions:
                         nr, nc = r + dr, c + dc
@@ -119,6 +161,7 @@ class UnionFindSolution:
                         ):
                             continue
 
+                        # try to make two adjacent cells "unionize". If it succeeds then you decrement. ( i.e. they were not in the same disjoint set before but now they are)
                         if dsu.union(index(r, c), index(nr, nc)):
                             islands -= 1
 
