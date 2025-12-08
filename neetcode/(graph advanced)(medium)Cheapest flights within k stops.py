@@ -10,11 +10,19 @@ from typing import List
 import heapq
 
 ''' 
-dijkstra works but need to keep prices for each number of stops instead, because for a certain number of stops say (k), we usually see one node only once.. but we could have different prices for the same node with different number of stops. 
-so we have a multidimensional prices array, one for each number of stops. 
-If we had a singular prices array and kept updating that , it could have lead to incorrect results when a node is revisited with a different number of stops than the one that was previously processed.
-For each node we visit in dijstra with a particular number of stops, that is the shortest way we could have reached that node in that many number of stops.
-Therefore , we need to update the distances array for stops + 1, because we have already found the node which is best /greedily reached with exactly #stops number of stops!!
+This problem modifies the classic Dijkstra's algorithm due to the unique constraint of having a maximum number of stops (k). Normally, Dijkstra's algorithm keeps only the shortest distance to each node, assuming that once a node is visited with the minimal cost, any future visits to that node can be ignored. However, in this problem, the number of stops taken to reach each node matters.
+
+Key Insight:
+- The same node can be reached multiple times with different numbers of stops, each with different associated costs. For example, reaching node X in 2 stops might be more expensive or cheaper than reaching node X in 3 stops, depending on the available flights and their costs.
+- Therefore, we cannot store just a single minimum price per node. Instead, we need to track the minimum price to each node for every possible number of stops (from 0 to k+1). This means our distances (prices) array becomes two-dimensional: prices[node][stops].
+- If we used a single-dimensional array for prices and updated it greedily, we might incorrectly discard a path that reaches the same node with a different (possibly more optimal for the destination!) number of stops.
+- This modification ensures that, for a given node and a specific number of stops, we keep the minimum price found so far.
+
+Summary:
+- We use a priority queue (min-heap) for Dijkstra's approach but with state (node, stops).
+- For each node, we maintain the best price to reach it with every possible stop count up to k+1.
+- Only if we find a cheaper price for a node with a given number of stops do we proceed to queue that state for further processing.
+- At the end, we search for the minimum price among all possible stop counts for the destination node.
 '''
 
 class Solution_dijkstra:
