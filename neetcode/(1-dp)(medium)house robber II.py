@@ -26,7 +26,7 @@ Constraints:
 
 '''
 from typing import List
-
+from collections import defaultdict
 
 class Solution:
     def rob(self, nums: List[int]) -> int:
@@ -88,3 +88,35 @@ class Solution:
             return cache[key]
 
         return max(helper(0, True), helper(1, False))
+
+    # my solution but in bottom up 
+    def rob(self, nums: List[int]) -> int:
+        cache = defaultdict(int)
+        n = len(nums)
+
+        if n == 1:
+            return nums[0]
+
+        # base case
+        for j in range(n, n+3):
+            cache[(j, False)] = 0
+            
+        cache[(n-1,False)] = nums[n-1]
+
+        for j in range(n-1, n + 3):
+            cache[(j, True)] = 0 
+
+        # reverse topo order
+        for i in range(n-2, -1, -1):
+            for from_start in [True, False]:
+                key = (i, from_start)
+
+                exc = cache[(i + 1, from_start)]
+                inc = nums[i] + cache[(i + 2, from_start)]
+
+                cache[key] = max(exc, inc)
+
+        return max(
+            cache[(0, True)],
+            cache[(1, False)]
+        )
