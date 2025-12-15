@@ -259,7 +259,7 @@ class Solution:
                 #   This propagates the earliest reachable node up the tree
                 self.low[u] = min(self.low[u], self.low[v])
                 
-                # Check Articulation Point Condition (for non-root nodes)
+                # Check Articulation Point Condition (for non-root nodes ONLY)
                 # Condition: disc[u] <= low[v]
                 # 
                 # This means:
@@ -289,6 +289,13 @@ class Solution:
                 #   disc[1]=1, low[2]=1 (2 can reach 1, but not 0)
                 #   disc[1] <= low[2]? YES (1 <= 1) → Node 1 is AP!
                 #   Why? 2 depends entirely on 1 for connectivity to 0
+                
+                # Why must this be non-root only?
+                # - If we drop the `parent[u] is not None` guard, roots with a single
+                #   child would become false positives.
+                # - Example false positive (chain): 0 - 1 - 2, DFS root = 0
+                #   * low[1]=1, disc[0]=0 → disc[0] <= low[1] is true
+                #   * Removing 0 leaves edge 1-2; graph stays connected → 0 is NOT AP
                 if self.parent[u] is not None and self.disc[u] <= self.low[v]:
                     # u is not root AND has child v with no back edge to u's ancestors
                     # u is an articulation point!
@@ -323,14 +330,14 @@ class Solution:
         # - Removing root disconnects these subtrees
         # - Root is articulation point
         # 
-        # Example:
-        #   Graph: 0 - 1, 0 - 2 (root 0 has two children)
-        #   - Root 0 has 2 children (1 and 2)
-        #   - Removing 0 splits graph into [1] and [2]
-        #   - Node 0 is articulation point
+        # Example true positive (needs this root-specific check):
+        #   Graph: 0 - 1, 0 - 2 (root 0 has two children, no back edges)
+        #   - Non-root rule is skipped for root, so without this check 0 is missed.
+        #   - Removing 0 splits graph into [1] and [2] → 0 IS an AP.
         # 
         # Why not if children == 1?
         # - Root with 1 child: removing root doesn't disconnect (only one subtree)
+        #   Example: chain 0 - 1 - 2 with root=0 → removing 0 leaves 1-2 connected
         # - Root with 0 children: single node, not an articulation point
         if self.parent[u] is None and children > 1:
             # u is root (no parent) AND has more than 1 child
