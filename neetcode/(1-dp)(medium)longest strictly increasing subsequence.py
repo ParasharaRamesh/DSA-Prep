@@ -118,6 +118,9 @@ class Solution:
         sub = []
 
         for num in nums:
+            # use bisect_left (not bisect_right) so that if num is equal to an existing
+            # value, we replace the *first* occurrence; inserting after equal values
+            # (bisect_right) could create a non‑strict sequence like [1, 3, 3]
             i = bisect_left(sub, num)
 
             if i == len(sub):
