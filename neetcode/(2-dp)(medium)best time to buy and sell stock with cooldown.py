@@ -117,9 +117,9 @@ class Solution:
         n = len(prices)
         cache = dict()
 
-        # 2d dp because at each point we need to know whether we are allowed to buy or we are in cooling because we may have bought something before!
-        def helper(i, can_buy):
-            key = (i, can_buy)
+        # you can always assume that at i you have the decision of either buying or leaving it alone 
+        def helper(i):
+            key = i
 
             if key in cache:
                 return cache[key]
@@ -128,15 +128,8 @@ class Solution:
                 cache[key] = 0
                 return 0
 
-            if not can_buy:
-                # just go to the next one
-                cache[key] = helper(i + 1, True)
-                return cache[key]
-
-            # in case can_buy is already True
-
             # exclude: buying on ith day and move ahead
-            exc = helper(i + 1, True)
+            exc = helper(i + 1)
 
             # include: choose to buy on ith day
             buy = prices[i]
@@ -147,14 +140,13 @@ class Solution:
                 sell = prices[j]
                 if sell >= buy:
                     profit = sell - buy
-                    inc = profit + helper(j + 2, True)
+                    inc = profit + helper(j + 2)
                     best_inc = max(best_inc, inc)
 
             cache[key] = max(exc, best_inc)
             return cache[key]
 
-        # always allowed to buy when starting
-        return helper(0, True)
+        return helper(0)
 
     # bottom up approach 2 works :)
     def maxProfit_tab_2(self, prices: List[int]) -> int:
@@ -163,42 +155,29 @@ class Solution:
             return 0
 
         n = len(prices)
-        cache = dict()
 
-        # base cases
-        cache[(n, True)] = 0
-        cache[(n, False)] = 0
-        cache[(n + 1, True)] = 0
-        cache[(n + 1, False)] = 0
+        # dp[i] = max profit starting from day i (we are always allowed to buy)
+        # extra two slots to safely access dp[j + 2] when j is n - 1
+        dp = [0] * (n + 2)
 
-        # all states
+        # fill from the end towards the beginning
         for i in range(n - 1, -1, -1):
-            for can_buy in [False, True]:
-                key = (i, can_buy)
+            # option 1: skip buying on day i
+            exc = dp[i + 1]
 
-                if can_buy:
-                    # exclude: buying on ith day and move ahead
-                    exc = cache[(i + 1, True)]
+            # option 2: buy on day i, sell on some later day j, then jump to j + 2 (cooldown)
+            buy = prices[i]
+            best_inc = 0
+            for j in range(i + 1, n):
+                sell = prices[j]
+                if sell >= buy:
+                    profit = sell - buy
+                    inc = profit + dp[j + 2]
+                    best_inc = max(best_inc, inc)
 
-                    # include: choose to buy on ith day
-                    buy = prices[i]
+            dp[i] = max(exc, best_inc)
 
-                    # choose to sell on jth day
-                    best_inc = 0
-                    for j in range(i + 1, n):
-                        sell = prices[j]
-                        if sell >= buy:
-                            profit = sell - buy
-                            inc = profit + cache[(j + 2, True)]
-                            best_inc = max(best_inc, inc)
-
-                    cache[key] = max(exc, best_inc)
-                else:
-                    # just go to the next one
-                    cache[key] = cache[(i + 1, True)]
-
-        # always allowed to buy when starting
-        return cache[(0, True)]
+        return dp[0]
 
 if __name__ == '__main__':
     s = Solution()
