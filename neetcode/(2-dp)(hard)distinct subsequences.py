@@ -8,11 +8,12 @@ Example 1:
 Input: s = "caaat", t = "cat"
 
 Output: 3
-Explanation: Rhere are 3 ways you can generate "cat" from s.
+Explanation: There are 3 ways you can generate "cat" from s.
 
 (c)aa(at)
 (c)a(a)a(t)
 (ca)aa(t)
+
 Example 2:
 
 Input: s = "xxyxy", t = "xy"
