@@ -117,7 +117,7 @@ class Solution:
         n = len(prices)
         cache = dict()
 
-        # you can always assume that at i you have the decision of either buying or leaving it alone 
+        # you can always assume that at i you have the decision of either buying or leaving it alone and at each index i we try to see what is the best way we can buy from there
         def helper(i):
             key = i
 
