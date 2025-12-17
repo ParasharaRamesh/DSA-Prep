@@ -40,7 +40,7 @@ class Solution:
 
         cache = dict()
 
-        # the fact that we dont need a visited set is because none of the older values would anyways make it in the current path because of the strict increasing check
+        # the fact that we dont need a visited set is because none of the older values would anyways make it in the current path because of the strict increasing check => no potential for cycles
         def dfs(i, j):
             key = (i, j)
 
