@@ -67,3 +67,26 @@ class Solution:
 
         # if it has come all the way to the starting then it is reachable
         return goal == 0
+    
+    # alternative greedy solution 
+    def canJump_alt1(self, nums: List[int]) -> bool:
+        max_reach = 0
+
+        for i in range(len(nums) - 1):
+            if i <= max_reach:
+                curr_reach = i + nums[i]
+                max_reach = max(max_reach, curr_reach)
+
+        return len(nums) - 1  <= max_reach
+
+    # subtle optimization 
+    def canJump_alt2(self, nums: List[int]) -> bool:
+        max_reach = 0
+
+        for i in range(len(nums) - 1):
+            if i > max_reach: 
+                return False
+            curr_reach = i + nums[i]
+            max_reach = max(max_reach, curr_reach)
+
+        return len(nums) - 1  <= max_reach
