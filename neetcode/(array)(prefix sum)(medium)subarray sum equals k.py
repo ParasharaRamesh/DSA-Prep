@@ -23,7 +23,11 @@ Constraints:
 
 Thoughts:
 1. My solution involved computing the prefix sum array and then using a hash map to store the indices of the prefix sum array. Then for every prefix sum, I would add to the result smartly based on whether the prefix sum was equal to k, and whether ps + k also existed in the same hashmap. Few minor edge cases where if the k value itself was 0, then we could just pick two indices from the same list to form a subarray with sum as 0. This solution worked but was inefficient.
-
+2. Neetcode solution:
+    . idea is that as we build the prefix sum array at position i, we can check if the difference between the prefix sum and k has occurred before.
+    . if it has, then we can add the number of times it has occurred to the result.
+    . The only tricky part is the initial value of the prefix sum to count map, which is 0: 1 which corresponds to saying that there is 1 empty subarray at index -1 which is 0. Doing this kind of sentinel trick makes it easier to calculate things and keeps the code clean.
+    . This way the first time we come up with the subarray sum as k, its equivalent to saying we removed the empty subarray in the beginning to get this one!
 '''
 
 from typing import List
