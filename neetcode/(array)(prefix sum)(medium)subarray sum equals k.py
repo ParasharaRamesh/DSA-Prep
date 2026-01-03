@@ -32,9 +32,24 @@ from bisect import *
 from math import *
 
 class Solution:
-    # inspired by neetcode solution
+    '''
+    inspired by neetcode solution, can build it in a single pass:
+    . idea is that as we build the prefix sum array at position i, we can check if the difference between the prefix sum and k has occurred before.
+    . if it has, then we can add the number of times it has occurred to the result.
+    . The only tricky part is the initial value of the prefix sum to count map, which is 0: 1 which corresponds to saying that there is 1 empty subarray at index -1 which is 0. Doing this kind of sentinel trick makes it easier to calculate things and keeps the code clean.
+    . This way the first time we come up with the subarray sum as k, its equivalent to saying we removed the empty subarray in the beginning to get this one!
+    '''
     def subarraySum(self, nums: List[int], k: int) -> int:
-        pass
+        ps_to_count = {0: 1}
+        prefix_sum = 0
+        res = 0
+        for num in nums:
+            prefix_sum += num
+            diff = prefix_sum - k
+            res += ps_to_count.get(diff, 0)
+            ps_to_count[prefix_sum] = ps_to_count.get(prefix_sum, 0) + 1
+
+        return res
 
     # it worked but was inefficient
     def subarraySum_mysolution(self, nums: List[int], k: int) -> int:
