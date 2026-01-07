@@ -59,10 +59,16 @@ Thoughts:
     - keep track of the longest window so far and return that 
 
 . Solution 3 (using 2 deques - monotonic queue):
-    TODO
-
+    - initially you might think that we can just have a max and min variable which we can use to keep track of things as we keep going through the list 
+    - however once we modify the max or min values as we move the r pointer , we dont know how things change the moment we move the l pointer
+    - which means we need to have a list of next possible max values and another list of next possible min values incase the l pointer moves forward
+    - this is exactly why we have 2 deques one to keep track of min values and another to keep track of max values
+    - here we use the monotonic property :
+        - basically at every index what is the next min or next max (which is exactly what we want) so that once something is removed from the min or max queues we can just take the next min/max and do the logic
+        - for maintain a list of min values we maintain a monotonically increasing list and analogously a montonically decreasing list for max values
 '''
 
+from collections import deque
 from typing import List
 from sortedcontainers import SortedList
 from heapq import *
@@ -163,7 +169,32 @@ class Solution:
 
     # using the idea of monotonic queues
     def longestSubarray(self, nums: List[int], limit: int) -> int:
-        pass
+        decQ = deque() 
+        incQ = deque() 
+        ans = 0
+        left = 0
+
+        for right, num in enumerate(nums):
+            while decQ and num > decQ[-1]:
+                decQ.pop()
+            decQ.append(num)
+
+            while incQ and num < incQ[-1]:
+                incQ.pop()
+            incQ.append(num)
+
+            while decQ[0] - incQ[0] > limit:
+                if decQ[0] == nums[left]:
+                    decQ.popleft()
+
+                if incQ[0] == nums[left]:
+                    incQ.popleft()
+
+                left += 1
+
+            ans = max(ans, right - left + 1)
+
+        return ans
 
 if __name__ == "__main__":
     s = Solution()
