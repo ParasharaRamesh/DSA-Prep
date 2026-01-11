@@ -1,81 +1,60 @@
 '''
-You are given an array of integers heights where heights[i] represents the height of a bar. The width of each bar is 1.
+Given a rows x cols binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
 
-Return the area of the largest rectangle that can be formed among the bars.
-
-Note: This chart is known as a histogram.
+ 
 
 Example 1:
 
-Input: heights = [7,1,7,2,2,4]
 
-Output: 8
+Input: matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]
+Output: 6
+Explanation: The maximal rectangle is shown in the above picture.
 Example 2:
 
-Input: heights = [1,3,7]
+Input: matrix = [["0"]]
+Output: 0
+Example 3:
 
-Output: 7
+Input: matrix = [["1"]]
+Output: 1
+ 
+
 Constraints:
 
-1 <= heights.length <= 1000.
-0 <= heights[i] <= 1000
-
-Insights:
-
-- for each height try to find the left and right most boundaries such that this height can be included
-- some kind of preprocessing is needed and then we can do h * (r - l + 1) and find the max in O(n)
-preprocess logic
-- as long as its greater than curr keep incrementing
-- TLE solution did preprocessing n^2 need to reduce that
-
-Optimal:
-
-- Use monotonic increasing stack where you store indices also so that way we know we can keep increasing the heights as far as possible
-- the moment we see something lower ,we pop as much as possible and compute the area of that popped region
-- in the end we are still left with heights in the stack which is in increasing order of heights so just compute the areas there
-
-
+rows == matrix.length
+cols == matrix[i].length
+1 <= rows, cols <= 200
+matrix[i][j] is '0' or '1'.
 '''
+
+
 from typing import List
-from collections import deque
-
-
 class Solution:
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        R = len(matrix)
+        C = len(matrix[0])
 
-    # TLE O(n2)
-    def preprocess(self, heights):
-        left = []
-        right = []
+        # change everything to ints
+        for r in range(R):
+            for c in range(C):
+                matrix[r][c] = int(matrix[r][c])
+        
+        # make sure that at each row we make it as a histogram of heights as long as the base is a 1
+        for r in range(1, R):
+            for c in range(C):
+                if matrix[r][c] == 1:
+                    matrix[r][c] += matrix[r-1][c]
 
-        for i in range(len(heights)):
-            curr = heights[i]
-
-            # left
-            l = i
-            while l >= 0 and heights[l] >= curr:
-                l -= 1
-            left.append(l + 1)
-
-            # right
-            r = i
-            while r < len(heights) and heights[r] >= curr:
-                r += 1
-            right.append(r - 1)
-
-        return left, right
-
-    def largestRectangleArea_tle(self, heights: List[int]) -> int:
-        left, right = self.preprocess(heights)
+        # make sure to find the maximal rectangle area row by row
         max_area = 0
-
-        for i, h in enumerate(heights):
-            area = h * (right[i] - left[i] + 1)
-            max_area = max(max_area, area)
+        for heights in matrix:
+            largest_in_heights = self.largest_rect_area_in_heights(heights)
+            max_area = max(max_area, largest_in_heights)
 
         return max_area
 
-    # optimal
-    def largestRectangleArea(self, heights: List[int]) -> int:
+    # the same as the largest rectangle in historgram problem
+    def largest_rect_area_in_heights(self, heights: List[int]) -> int:
         max_area = 0
 
         # Stack stores tuples: (start_index, height)
@@ -192,15 +171,3 @@ class Solution:
             max_area = max(max_area, h * (n - start))
 
         return max_area
-
-
-if __name__ == '__main__':
-    s = Solution()
-
-    heights = [2, 1, 5, 6, 2, 3]
-    res = s.largestRectangleArea(heights)
-    print(res, res == 10)
-
-    heights = [2, 4]
-    res = s.largestRectangleArea(heights)
-    print(res, res == 4)
