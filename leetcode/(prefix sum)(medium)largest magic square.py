@@ -92,35 +92,11 @@ class Solution:
     
     def is_magic_square(self, m, n, i, j, k):
         # square is (i, j) -> (i + k - 1, j + k - 1)
-        # Falsify
-        
-        # use row ps to check all rows from [i -> i + k] if all have the same prefix sums
-        row_sum = None
 
-        for s in range(k):
-            row_s_sum = self.row_prefix_sums[i+s][j + k - 1]
-            if j > 0:
-                row_s_sum = self.row_prefix_sums[i+s][j + k - 1] - self.row_prefix_sums[i+s][j-1]
-            
-            if row_sum == None:
-                row_sum = row_s_sum
-            elif row_sum != row_s_sum:
-                return False
+        #this is the value everything should match
+        sum = None 
 
-
-        # use col ps to check all cols from [j -> j + k] if all have the same prefix sums
-        col_sum = None
-
-        for s in range(k):
-            col_s_sum = self.col_prefix_sums[i + k - 1][j + s]
-            if i > 0:
-                col_s_sum = self.col_prefix_sums[i + k - 1][j + s] - self.col_prefix_sums[i-1][j+s]
-            
-            if col_sum == None:
-                col_sum = col_s_sum
-            elif col_sum != col_s_sum:
-                return False
-
+        # check diagonals first to rule out squares faster!
         # check pos diag
         pid = n*i + j
         other_pid = n*(i + k - 1) + (j + k - 1)
@@ -132,6 +108,8 @@ class Solution:
         pos_diag_sum = pos_diag_ps[pos_other_ind][-1]
         if pos_ind > 0:
             pos_diag_sum = pos_diag_ps[pos_other_ind][-1] - pos_diag_ps[pos_ind - 1][-1]
+
+        sum = pos_diag_sum
 
         # check neg diag
         neg_pid = n*i + (j + k - 1)
@@ -146,11 +124,30 @@ class Solution:
         if neg_ind > 0:
             neg_diag_sum = neg_diag_ps[neg_other_ind][-1] - neg_diag_ps[neg_ind - 1][-1]
 
-        if pos_diag_sum != neg_diag_sum:
+        if neg_diag_sum != sum:
             return False
         
-        # all sums in a magic square should be the same!
-        return pos_diag_sum == neg_diag_sum == row_sum == col_sum
+        # use row ps to check all rows from [i -> i + k] if all have the same prefix sums
+        for s in range(k):
+            row_s_sum = self.row_prefix_sums[i+s][j + k - 1]
+            if j > 0:
+                row_s_sum = self.row_prefix_sums[i+s][j + k - 1] - self.row_prefix_sums[i+s][j-1]
+            
+            if sum != row_s_sum:
+                return False
+
+
+        # use col ps to check all cols from [j -> j + k] if all have the same prefix sums
+        for s in range(k):
+            col_s_sum = self.col_prefix_sums[i + k - 1][j + s]
+            if i > 0:
+                col_s_sum = self.col_prefix_sums[i + k - 1][j + s] - self.col_prefix_sums[i-1][j+s]
+            
+            if sum != col_s_sum:
+                return False
+        
+        # all sums are the same
+        return True
 
 if __name__ == "__main__":
     s = Solution()
