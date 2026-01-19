@@ -52,7 +52,6 @@ class Solution:
             diff = prefix_sum - k
             res += ps_to_count.get(diff, 0)
             ps_to_count[prefix_sum] = ps_to_count.get(prefix_sum, 0) + 1
-
         return res
 
     # it worked but was inefficient
@@ -94,7 +93,6 @@ class Solution:
                         ind = bisect_left(other_inds, ci)
                         if ind < len(other_inds):
                             num_other = len(other_inds) - ind
-                            # print(f"addding {num_other=} to {res=} for {ci=}")
                             res += num_other
 
         return res
