@@ -64,3 +64,37 @@ def apply_updates_using_accumulated_change(original_arr, updates):
     return original_arr
 
 # look at the corporate flight bookings problem on leetcode and its solution here if you want an example
+
+def apply_2d_updates(matrix_m, matrix_n, updates):
+    """
+    matrix_m: number of rows
+    matrix_n: number of columns
+    updates: list of [r1, c1, r2, c2, val]
+    """
+    # 1. Initialize a difference array with extra padding (M+1 x N+1)
+    # This padding handles the boundary for (r2+1) and (c2+1) automatically.
+    diff = [[0] * (matrix_n + 1) for _ in range(matrix_m + 1)]
+
+    # 2. Record all updates in O(1) each
+    # 4 point update ( refer to notes on why this is correct )
+    for r1, c1, r2, c2, val in updates:
+        diff[r1][c1] += val
+        diff[r1][c2 + 1] -= val
+        diff[r2 + 1][c1] -= val
+        diff[r2 + 1][c2 + 1] += val
+
+    # 3. Compute the 2D Prefix Sum to get the final values
+    # We create a result grid of the original size
+    res = [[0] * matrix_n for _ in range(matrix_m)]
+    
+    for r in range(matrix_m):
+        for c in range(matrix_n):
+            # To find the current value, we use the 2D prefix sum formula:
+            # Current = Top + Left - TopLeft + Self_Difference
+            top = res[r-1][c] if r > 0 else 0
+            left = res[r][c-1] if c > 0 else 0
+            top_left = res[r-1][c-1] if (r > 0 and c > 0) else 0
+            
+            res[r][c] = top + left - top_left + diff[r][c]
+            
+    return res
