@@ -148,37 +148,152 @@ class SizeUnionFind(UnionFind):
         return self.size[parent]
 
 if __name__ == '__main__':
-    # Demonstration of three variants with small, readable examples
+    # Demonstration of four variants with small, readable examples
 
     # 1) Baseline Union-Find (no optimizations)
+    print("\n" + "="*50)
+    print("1) Baseline Union-Find Demonstration (No Optimizations)")
+    print("="*50)
     uf = UnionFind()
+    print("\n--- Creating sets ---")
     for x in [1, 2, 3, 4, 5]:
         uf.create_set(x)
+        print(f"Created set for {x}, root: {uf.find(x)}")
+    
+    print("\n--- Performing unions ---")
     uf.union(1, 2)
+    print(f"Union(1, 2): Root of 1: {uf.find(1)}, Root of 2: {uf.find(2)}")
+    
     uf.union(3, 4)
+    print(f"Union(3, 4): Root of 3: {uf.find(3)}, Root of 4: {uf.find(4)}")
+    
     uf.union(2, 3)
-    # Expected: 1,2,3,4 connected; 5 separate
-    print("Baseline connected(1,4):", uf.connected(1, 4))  # True
-    print("Baseline connected(1,5):", uf.connected(1, 5))  # False
+    print(f"Union(2, 3): Root of 2: {uf.find(2)}, Root of 3: {uf.find(3)}")
+    print(f"After Union(2, 3): Root of 1: {uf.find(1)}, Root of 4: {uf.find(4)}")
+    
+    print("\n--- Connection checks ---")
+    print("Baseline connected(1, 4):", uf.connected(1, 4))  # True
+    print("Baseline connected(1, 5):", uf.connected(1, 5))  # False
+    print("Baseline connected(2, 3):", uf.connected(2, 3))  # True
+    
+    print("\n--- Final roots ---")
+    for x in [1, 2, 3, 4, 5]:
+        print(f"Root of {x}: {uf.find(x)}")
 
     # 2) Path Compression Union-Find
+    print("\n" + "="*50)
+    print("2) Path Compression Union-Find Demonstration")
+    print("="*50)
     uf_pc = PathCompressionUnionFind()
+    print("\n--- Creating sets ---")
     for x in [1, 2, 3, 4, 5]:
         uf_pc.create_set(x)
+        print(f"Created set for {x}, root: {uf_pc.find(x)}")
+    
+    print("\n--- Performing unions ---")
     uf_pc.union(1, 2)
+    print(f"Union(1, 2): Root of 1: {uf_pc.find(1)}, Root of 2: {uf_pc.find(2)}")
+    
     uf_pc.union(3, 4)
+    print(f"Union(3, 4): Root of 3: {uf_pc.find(3)}, Root of 4: {uf_pc.find(4)}")
+    
     uf_pc.union(2, 3)
-    # After a find, paths should be compressed
-    _ = uf_pc.find(4)
-    print("PathCompression connected(1,4):", uf_pc.connected(1, 4))  # True
-    print("PathCompression connected(4,5):", uf_pc.connected(4, 5))  # False
+    print(f"Union(2, 3): Root of 2: {uf_pc.find(2)}, Root of 3: {uf_pc.find(3)}")
+    
+    print("\n--- Before path compression ---")
+    print(f"Root of 4 before find: {uf_pc.find(4)}")
+    print("Calling find(4) to trigger path compression...")
+    root_4 = uf_pc.find(4)
+    print(f"Root of 4 after path compression: {root_4}")
+    
+    print("\n--- After path compression ---")
+    print(f"Root of 1: {uf_pc.find(1)}, Root of 2: {uf_pc.find(2)}")
+    print(f"Root of 3: {uf_pc.find(3)}, Root of 4: {uf_pc.find(4)}")
+    
+    print("\n--- Connection checks ---")
+    print("PathCompression connected(1, 4):", uf_pc.connected(1, 4))  # True
+    print("PathCompression connected(4, 5):", uf_pc.connected(4, 5))  # False
+    print("PathCompression connected(2, 3):", uf_pc.connected(2, 3))  # True
+    
+    print("\n--- Final roots (all paths compressed) ---")
+    for x in [1, 2, 3, 4, 5]:
+        print(f"Root of {x}: {uf_pc.find(x)}")
 
     # 3) Rank-based Union-Find (no path compression)
+    print("\n" + "="*50)
+    print("3) Rank-based Union-Find Demonstration")
+    print("="*50)
     uf_rank = RankUnionFind()
+    print("\n--- Creating sets ---")
     for x in [1, 2, 3, 4, 5]:
         uf_rank.create_set(x)
+        print(f"Created set for {x}, root: {uf_rank.find(x)}, rank: {uf_rank.rank.get(x, 0)}")
+    
+    print("\n--- Performing unions ---")
     uf_rank.union(1, 2)
+    root_1 = uf_rank.find(1)
+    root_2 = uf_rank.find(2)
+    print(f"Union(1, 2): Root of 1: {root_1}, rank: {uf_rank.rank.get(root_1, 0)}")
+    print(f"Union(1, 2): Root of 2: {root_2}, rank: {uf_rank.rank.get(root_2, 0)}")
+    
     uf_rank.union(3, 4)
+    root_3 = uf_rank.find(3)
+    root_4 = uf_rank.find(4)
+    print(f"Union(3, 4): Root of 3: {root_3}, rank: {uf_rank.rank.get(root_3, 0)}")
+    print(f"Union(3, 4): Root of 4: {root_4}, rank: {uf_rank.rank.get(root_4, 0)}")
+    
     uf_rank.union(2, 3)
-    print("Rank connected(1,4):", uf_rank.connected(1, 4))  # True
-    print("Rank connected(3,5):", uf_rank.connected(3, 5))  # False
+    root_1_final = uf_rank.find(1)
+    root_3_final = uf_rank.find(3)
+    print(f"Union(2, 3): Root of 1: {root_1_final}, rank: {uf_rank.rank.get(root_1_final, 0)}")
+    print(f"Union(2, 3): Root of 3: {root_3_final}, rank: {uf_rank.rank.get(root_3_final, 0)}")
+    print(f"Union(2, 3): Root of 2: {uf_rank.find(2)}, Root of 4: {uf_rank.find(4)}")
+    
+    print("\n--- Connection checks ---")
+    print("Rank connected(1, 4):", uf_rank.connected(1, 4))  # True
+    print("Rank connected(3, 5):", uf_rank.connected(3, 5))  # False
+    print("Rank connected(2, 3):", uf_rank.connected(2, 3))  # True
+    
+    print("\n--- Final roots and ranks ---")
+    for x in [1, 2, 3, 4, 5]:
+        root = uf_rank.find(x)
+        print(f"Node {x}: Root = {root}, Rank of root = {uf_rank.rank.get(root, 0)}")
+
+    # 4) Size-based Union-Find (union by size)
+    print("\n" + "="*50)
+    print("4) Size-based Union-Find Demonstration")
+    print("="*50)
+    uf_size = SizeUnionFind()
+    for x in [1, 2, 3, 4, 5, 6]:
+        uf_size.create_set(x)
+        print(f"Created set for {x}, size: {uf_size.get_size(x)}")
+    
+    print("\n--- Performing unions ---")
+    uf_size.union(1, 2)
+    print(f"Union(1, 2): Size of component containing 1: {uf_size.get_size(1)}")
+    print(f"Union(1, 2): Size of component containing 2: {uf_size.get_size(2)}")
+    
+    uf_size.union(3, 4)
+    print(f"Union(3, 4): Size of component containing 3: {uf_size.get_size(3)}")
+    print(f"Union(3, 4): Size of component containing 4: {uf_size.get_size(4)}")
+    
+    uf_size.union(2, 3)
+    print(f"Union(2, 3): Size of component containing 1: {uf_size.get_size(1)}")
+    print(f"Union(2, 3): Size of component containing 2: {uf_size.get_size(2)}")
+    print(f"Union(2, 3): Size of component containing 3: {uf_size.get_size(3)}")
+    print(f"Union(2, 3): Size of component containing 4: {uf_size.get_size(4)}")
+    
+    uf_size.union(5, 6)
+    print(f"Union(5, 6): Size of component containing 5: {uf_size.get_size(5)}")
+    print(f"Union(5, 6): Size of component containing 6: {uf_size.get_size(6)}")
+    
+    print("\n--- Connection checks ---")
+    print("Size connected(1, 4):", uf_size.connected(1, 4))  # True
+    print("Size connected(1, 5):", uf_size.connected(1, 5))  # False
+    print("Size connected(3, 5):", uf_size.connected(3, 5))  # False
+    print("Size connected(5, 6):", uf_size.connected(5, 6))  # True
+    
+    print("\n--- Final component sizes ---")
+    print(f"Component containing 1 has size: {uf_size.get_size(1)}")  # Should be 4
+    print(f"Component containing 5 has size: {uf_size.get_size(5)}")  # Should be 2
+    print(f"Component containing 6 has size: {uf_size.get_size(6)}")  # Should be 2
