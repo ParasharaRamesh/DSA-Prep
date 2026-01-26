@@ -29,7 +29,7 @@ Constraints:
 '''
 
 '''
-Refer to algorithms/marking an array to preserve space.py for more details on this patten
+Refer to algorithms/Marking - Modulo encoding - cycle sort idea - to preserve space.py for more details on this patten
 APPROACH 1: CYCLE SORT (Modified)
 ---------------------------------
 1. Filter out non-positive numbers as they don't affect the answer.
@@ -50,6 +50,7 @@ APPROACH 2: IN-PLACE HASHING (MODULO ARITHMETIC)
    - We add `n` to `nums[x]`. 
    - To retrieve the original number at any index `i` during this process, we use `nums[i] % n`.
    - To check if an index `i` was visited, we check if `nums[i] // n > 0`.
+   - this is because if something was not visited, it would not have been marked by a +n which means its frequency is 0
 4. RESULT: The first index `i` where `nums[i] // n == 0` is the missing number.
 '''
  
