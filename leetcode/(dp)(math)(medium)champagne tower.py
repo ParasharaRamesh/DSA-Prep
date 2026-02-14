@@ -56,8 +56,13 @@ class Solution:
                 . surplus will be (F - 1) / 2, because the cup above only gives half of the surplus and if it is overflowing we need to subtract 1 from it.
                 . max with 0 because we cannot have negative contribution
             '''
-            left = max(0, (f(r-1, c-1) - 1)/2)
-            right = max(0, (f(r-1, c) - 1)/2)
+            left_flow = f(r-1, c-1)
+            left_surplus = (left_flow - 1)/2
+            left = max(0, left_surplus)
+
+            right_flow = f(r-1, c)
+            right_surplus = (right_flow - 1) / 2
+            right = max(0, right_surplus)
 
             # total is left contribution + right contribution
             return left + right
