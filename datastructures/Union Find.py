@@ -1,3 +1,8 @@
+'''
+A disjoint set refers to a collection of sets where no two sets share any common elements—meaning the intersection of any two sets is the empty set (ϕ).  In the context of the Union-Find data structure, this concept is operationalized to manage a partition of elements into non-overlapping subsets, where each subset has a representative (often its root) that identifies the group. 
+
+Philosophically, a disjoint set embodies the idea of mutual exclusivity and identity: each element belongs to exactly one group, and the structure maintains this separation while allowing efficient merging (union) and identification (find) of group membership. It reflects a dynamic system where relationships evolve—elements start isolated, then are connected through union operations—yet the core principle remains: no element can belong to more than one set at a time.  This mirrors real-world scenarios like connected components in networks, where connectivity is binary (either connected or not), and the system must track these relationships efficiently
+'''
 class UnionFind:
     """
     Disjoint Set Union (Union-Find) with the baseline (no optimizations).
