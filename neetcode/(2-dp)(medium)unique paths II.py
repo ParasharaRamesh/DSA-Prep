@@ -31,6 +31,7 @@ obstacleGrid[i][j] is 0 or 1.
 
 '''
 
+from typing import List
 from functools import cache
 
 class Solution:
