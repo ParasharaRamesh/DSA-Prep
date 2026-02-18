@@ -7,8 +7,12 @@ class MinHeap:
 
     # main functions
     def buildHeap(self, array):
-        mid = (len(array) - 2) // 2
-        for i in reversed(range(mid + 1)):
+        if len(array) <= 1:
+            return array
+        # Start from the last node that has children (parent of last element), then go up to root.
+        last_index = len(array) - 1
+        last_parent_index = self.getParent(last_index)
+        for i in range(last_parent_index, -1, -1):
             array = self.siftDown(i, array)
         return array
 
