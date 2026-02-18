@@ -65,12 +65,17 @@ def apply_updates_using_accumulated_change(original_arr, updates):
 
 # look at the corporate flight bookings problem on leetcode and its solution here if you want an example
 
-def apply_2d_updates(matrix_m, matrix_n, updates):
+def apply_2d_updates(original_matrix, updates):
     """
-    matrix_m: number of rows
-    matrix_n: number of columns
+    Model B (2D): Create a separate 'change log' matrix.
+    Calculate the total impact of all updates first, then merge with original matrix.
+    
+    original_matrix: 2D list of the original values
     updates: list of [r1, c1, r2, c2, val]
     """
+    matrix_m = len(original_matrix)
+    matrix_n = len(original_matrix[0]) if matrix_m > 0 else 0
+    
     # 1. Initialize a difference array with extra padding (M+1 x N+1)
     # This padding handles the boundary for (r2+1) and (c2+1) automatically.
     diff = [[0] * (matrix_n + 1) for _ in range(matrix_m + 1)]
@@ -83,18 +88,23 @@ def apply_2d_updates(matrix_m, matrix_n, updates):
         diff[r2 + 1][c1] -= val
         diff[r2 + 1][c2 + 1] += val
 
-    # 3. Compute the 2D Prefix Sum to get the final values
-    # We create a result grid of the original size
-    res = [[0] * matrix_n for _ in range(matrix_m)]
+    # 3. Compute the 2D Prefix Sum on the diff matrix to get accumulated changes
+    # This is analogous to the 1D accumulated change variant
+    accumulated_changes = [[0] * matrix_n for _ in range(matrix_m)]
     
     for r in range(matrix_m):
         for c in range(matrix_n):
-            # To find the current value, we use the 2D prefix sum formula:
+            # To find the accumulated change at (r, c), we use the 2D prefix sum formula:
             # Current = Top + Left - TopLeft + Self_Difference
-            top = res[r-1][c] if r > 0 else 0
-            left = res[r][c-1] if c > 0 else 0
-            top_left = res[r-1][c-1] if (r > 0 and c > 0) else 0
+            top = accumulated_changes[r-1][c] if r > 0 else 0
+            left = accumulated_changes[r][c-1] if c > 0 else 0
+            top_left = accumulated_changes[r-1][c-1] if (r > 0 and c > 0) else 0
             
-            res[r][c] = top + left - top_left + diff[r][c]
+            accumulated_changes[r][c] = top + left - top_left + diff[r][c]
+    
+    # 4. Add the accumulated changes to the original matrix (analogous to 1D variant)
+    for r in range(matrix_m):
+        for c in range(matrix_n):
+            original_matrix[r][c] += accumulated_changes[r][c]
             
-    return res
+    return original_matrix
