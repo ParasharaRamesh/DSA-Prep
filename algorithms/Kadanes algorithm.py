@@ -14,22 +14,24 @@ def kadanesAlgorithm(array):
 
 
 def kadanesAlgorithm_sliding_window(nums):
-    max_sum = float('-inf')  # Store the maximum sum found
-    window_sum = 0  # Current window sum
-    left = 0  # Left boundary of the sliding window
-    right = 0  # Right boundary of the sliding window
+    max_sum = float('-inf')  # best subarray sum seen so far
+    window_sum = 0           # current window sum (our "state")
+    left = 0                 # left boundary of the sliding window
 
-    while right < len(nums):
-        # 🔹 Grow the window: Expand as much as possible
-        while right < len(nums) and window_sum >= 0:
-            window_sum += nums[right]
-            max_sum = max(max_sum, window_sum)
-            right += 1  # Move right forward
+    for right in range(len(nums)):
+        # 1. GROW: add the right element into the window/state
+        window_sum += nums[right]
 
-        # 🔹 Shrink the window if sum becomes negative
-        while left < right and window_sum < 0:
-            window_sum -= nums[left]  # Remove leftmost element
-            left += 1  # Move left boundary forward
+        # 2. EVALUATE: this window [left, right] is a valid candidate
+        #    (for Kadane, even negative sums can be the best answer)
+        max_sum = max(max_sum, window_sum)
+
+        # 3. SHRINK: while the window is "invalid" for Kadane
+        #    (i.e., sum < 0, so it can never help future subarrays),
+        #    move left and remove elements from the state
+        while left <= right and window_sum < 0:
+            window_sum -= nums[left]
+            left += 1
 
     return max_sum
 
