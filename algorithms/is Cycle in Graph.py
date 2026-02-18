@@ -359,22 +359,19 @@ def is_cyclic_undirected_iterative(graph, n):
     """
     visited = [False] * n
 
-    # Check all components (handle disconnected graph)
     for start in range(n):
         if not visited[start]:
-            stack = [(start, -1)]  # (current_node, parent_node)
+            stack = [(start, -1)]
+            visited[start] = True  # mark on DISCOVERY
 
             while stack:
                 node, parent = stack.pop()
 
-                visited[node] = True
-
                 for neighbor in graph[node]:
                     if not visited[neighbor]:
-                        # Continue DFS
+                        visited[neighbor] = True  # mark on DISCOVERY
                         stack.append((neighbor, node))
                     elif neighbor != parent:
-                        # Found visited node that's NOT parent → back edge → cycle!
                         return True
 
     return False
