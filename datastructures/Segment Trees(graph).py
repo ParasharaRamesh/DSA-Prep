@@ -88,10 +88,31 @@ class SegmentTree:
         left_query = self.query(l, r, start, mid)
         right_query = self.query(l, r, mid + 1, end)
         return self.range_func(left_query, right_query)
+    
+    # alternative way to query which is easier to understand 
+    def query_with_node(self, l, r, node=None):
+        '''Query by walking the tree: pass root, then node.left / node.right. No dict lookup, no mid.'''
+        if node is None:
+            # technically we can even store only the root in the constructor if needed
+            node = self.tree[(0, len(self.arr) - 1)]  # root
+        start, end = node.start, node.end
+
+        # no overlap
+        if r < start or l > end:
+            return float("inf")
+
+        # complete overlap: we're at a real node, just use node.val
+        if l <= start and end <= r:
+            return node.val
+
+        # partial: recurse on children (tree structure does the "split" for us)
+        left_val = self.query_with_node(l, r, node.left)
+        right_val = self.query_with_node(l, r, node.right)
+        return self.range_func(left_val, right_val)
 
     def update(self, i, updated_value):
         '''
-        find the leaf, from there repopulate the parents
+        find the leaf, from there repopulate the parents using parent pointers directly
         '''
         # directly updated that node
         self.tree[(i, i)].val = updated_value
@@ -105,6 +126,37 @@ class SegmentTree:
 
             curr = curr.parent
 
+    def update_with_node(self, arr_index, new_val, node=None):
+        '''
+        Traverse down from root to leaf, update leaf, then refresh each node on the path
+        using left/right children (no parent pointers). Same idea as the array version.
+
+        This does not use the parent pointers directly, instead it uses the tree structure to find the node and update the path on the way back.
+        '''
+        if node is None:
+            node = self.tree[(0, len(self.arr) - 1)]  # root
+        start, end = node.start, node.end
+
+        # not in range
+        if arr_index < start or arr_index > end:
+            return
+
+        # found that leaf node where the start and end is actually the same as the array index
+        if start == end:
+            # leaf: update and return (path will be updated on unwind)
+            node.val = new_val
+            return
+
+        mid = start + (end - start) // 2
+        if arr_index <= mid:
+            # update the left child since the array index to update is in the left subtree
+            self.update_with_node(arr_index, new_val, node.left)
+        else:
+            # update the right child since the array index to update is in the right subtree
+            self.update_with_node(arr_index, new_val, node.right)
+
+        # on the way back: current node's value from its children
+        node.val = self.range_func(node.left.val, node.right.val)
 
 if __name__ == '__main__':
     arr = [0, 1, 2, 3, 4]
