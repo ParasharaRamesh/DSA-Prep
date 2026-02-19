@@ -100,6 +100,54 @@ class Solution:
 
         return result
 
+    # here we add only the very relevant ones only because anyways we are doing a lazy delete!
+    def minInterval_variant(self, intervals: List[List[int]], queries: List[int]) -> List[int]:
+        # book keeping
+        query_to_index = defaultdict(list)
+        for i, query in enumerate(queries):
+            query_to_index[query].append(i)
+
+
+        result = [-1] * len(queries)
+
+        # sort both
+        intervals.sort(key=lambda x: x[0])
+
+        queries = list(set(queries))
+        queries.sort()
+
+        # init heap
+        min_size_heap = []
+
+        # interval pointer
+        i = 0
+
+        for query in queries:
+            # 1. Add ONLY intervals that currently cover the query
+            # (start <= query AND end >= query)
+            while i < len(intervals) and intervals[i][0] <= query:
+                start, end = intervals[i]
+                
+                # Check if it actually includes the query before pushing
+                if end >= query:
+                    size = end - start + 1
+                    heappush(min_size_heap, (size, end))
+                
+                # We increment i regardless, because if end < query, 
+                # this interval is useless for all future sorted queries too.
+                i += 1
+
+            # 2. Lazy removal: Clean the top of the heap
+            # Pop intervals that were valid for previous queries but are now expired
+            while min_size_heap and min_size_heap[0][1] < query:
+                heappop(min_size_heap)
+
+            # 3. Record the result
+            if min_size_heap:
+                for ind in query_to_index[query]:
+                    result[ind] = min_size_heap[0][0]
+
+        return result
 
 if __name__ == '__main__':
     s = Solution()
