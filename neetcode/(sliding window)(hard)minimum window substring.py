@@ -90,3 +90,33 @@ class Solution:
                 start += 1
 
         return min_window
+
+    def minWindow_for_loop(self, s: str, t: str) -> str:
+        """Grow (add s[r]), shrink while valid (update best), one loop."""
+        if not t:
+            return ""
+        t_counts = Counter(t)
+        required = len(t_counts)  # distinct chars we must satisfy
+        window = defaultdict(int)
+        formed = 0
+        res_start, res_len = 0, float("inf")
+        l = 0
+
+        for r in range(len(s)):
+            # 1. GROW: add s[r]
+            c = s[r]
+            window[c] += 1
+            if c in t_counts and window[c] == t_counts[c]:
+                formed += 1
+
+            # 2. SHRINK: while window [l, r] still contains t, update best and shrink
+            while formed == required and l <= r:
+                if r - l + 1 < res_len:
+                    res_len = r - l + 1
+                    res_start = l
+                window[s[l]] -= 1
+                if s[l] in t_counts and window[s[l]] < t_counts[s[l]]:
+                    formed -= 1
+                l += 1
+
+        return s[res_start : res_start + res_len] if res_len != float("inf") else ""
