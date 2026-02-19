@@ -114,9 +114,10 @@ class Solution:
     Check: Aleft(3) ≤ Bright(19)? YES, Bleft(18) ≤ Aright(8)? NO!
     → Bleft > Aright means A's partition too far left, move right (l = m+1)
     
+    (different case say 21, 25 is not there in B)
     Try m=3:
     A: [1, 3, 8, | 9, 15]  (Aleft=8, Aright=9)
-    B: [7, | 11, 18, 19, 21, 25]  (Bleft=7, Bright=11)
+    B: [7, | 11, 18, 19]  (Bleft=7, Bright=11)
     Left partition: [1,3,8,9] from A + [7] from B = 5 elements ✓
     Check: Aleft(8) ≤ Bright(11)? YES, Bleft(7) ≤ Aright(9)? YES!
     → Valid partition found!
