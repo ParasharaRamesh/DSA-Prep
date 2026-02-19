@@ -17,41 +17,38 @@ class Solution:
         return -1
 
     def leftmost(self, nums: List[int], target: int) -> int:
-        # Find the leftmost occurrence or insertion index
-        l = 0
-        r = len(nums) - 1
-
+        l, r = 0, len(nums) - 1
+        candidate = -1  # Track leftmost match found so far
+        
         while l <= r:
-            m = (l + r) // 2
+            m = l + (r - l) // 2
             if nums[m] == target:
-                # Case 1: Match, but keep going left
-                r = m - 1
+                candidate = m          # Update: potential leftmost
+                r = m - 1              # Continue left for earlier match
             elif nums[m] < target:
-                # Case 2: Go right
-                l = m + 1
-            else:  # nums[m] > target
-                # Case 3: Go left
-                r = m - 1
-        return l  # l is the insertion index or first occurrence
+                l = m + 1              # Need larger values
+            else:
+                r = m - 1              # Need smaller values
+        
+        return candidate if candidate != -1 else l  # else insertion index
+
 
     def rightmost(self, nums: List[int], target: int) -> int:
-        # Find the rightmost occurrence or insertion index
-        l = 0
-        r = len(nums) - 1
-
+        l, r = 0, len(nums) - 1
+        candidate = -1  # Track rightmost match found so far
+        
         while l <= r:
-            m = (l + r) // 2
+            m = l + (r - l) // 2
             if nums[m] == target:
-                # Case 1: Match, but keep going right
-                l = m + 1
+                candidate = m          # Update: potential rightmost
+                l = m + 1              # Continue right for later match
             elif nums[m] < target:
-                # Case 2: Go right
-                l = m + 1
-            else:  # nums[m] > target
-                # Case 3: Go left
-                r = m - 1
-        # If found, r points to last occurrence; otherwise, l is insertion index
-        return r if r >= 0 and nums[r] == target else l
+                l = m + 1              # Need larger values
+            else:
+                r = m - 1              # Need smaller values
+        
+        return candidate if candidate != -1 else l  # else insertion index
+
 
     # --- tests ---
 
