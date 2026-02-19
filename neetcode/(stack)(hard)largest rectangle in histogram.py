@@ -36,14 +36,15 @@ Optimal:
 
 
 '''
+from tomllib import TOMLDecodeError
 from typing import List
 from collections import deque
 
 
 class Solution:
 
-    # TLE O(n2)
-    def preprocess(self, heights):
+    # Approach 1: TLE O(n2). 
+    def preprocess_tle(self, heights):
         left = []
         right = []
 
@@ -65,6 +66,83 @@ class Solution:
         return left, right
 
     def largestRectangleArea_tle(self, heights: List[int]) -> int:
+        left, right = self.preprocess_tle(heights)
+        max_area = 0
+
+        for i, h in enumerate(heights):
+            area = h * (right[i] - left[i] + 1)
+            max_area = max(max_area, area)
+
+        return max_area
+
+    # Approach 2: Improvement on approach 1 with better preprocessing 
+    def get_prev_smallest(self, heights):
+        '''
+        Finds the leftmost index where a rectangle of height heights[i] can start.
+        Returns an array where result[i] is the leftmost index (inclusive) where
+        all bars from that index to i have height >= heights[i].
+        
+        Uses monotonic increasing stack in reverse direction.
+        '''
+        res = [0] * len(heights)
+        stack = []  # stores indices
+        
+        # Process from right to left (reverse direction)
+        # This is similar to previous_smaller but we need the index, not the value
+        for i in range(len(heights) - 1, -1, -1):
+            # Pop indices where the height is > current height
+            # We use > (not >=) because equal heights can extend to each other
+            # This maintains a monotonically increasing stack (smaller to larger)
+            while stack and heights[stack[-1]] > heights[i]:
+                prev_ind = stack.pop()
+                # The leftmost index where prev_ind can start is i + 1
+                # because heights[i] is smaller than heights[prev_ind]
+                res[prev_ind] = i + 1
+            
+            # Maintain monotonically increasing stack
+            stack.append(i)
+        
+        # No need to process remaining stack - res is already initialized to 0
+        # Elements that remain in stack can start from index 0 (no smaller element to the left)
+        return res
+
+    def get_next_smallest(self, heights):
+        '''
+        Finds the rightmost index where a rectangle of height heights[i] can end.
+        Returns an array where result[i] is the rightmost index (inclusive) where
+        all bars from i to that index have height >= heights[i].
+        
+        Uses monotonic increasing stack in forward direction.
+        '''
+        res = [len(heights) - 1] * len(heights)
+        stack = []  # stores indices
+        
+        # Process from left to right (forward direction)
+        # This is similar to next_smaller but we need the index, not the value
+        for i in range(len(heights)):
+            # Pop indices where the height is > current height
+            # We use > (not >=) because equal heights can extend to each other
+            # This maintains a monotonically increasing stack (smaller to larger)
+            while stack and heights[stack[-1]] > heights[i]:
+                prev_ind = stack.pop()
+                # The rightmost index where prev_ind can end is i - 1
+                # because heights[i] is smaller than heights[prev_ind]
+                res[prev_ind] = i - 1
+            
+            # Maintain monotonically increasing stack
+            stack.append(i)
+        
+        # No need to process remaining stack - res is already initialized to len(heights) - 1
+        # Elements that remain in stack can end at len(heights) - 1 (no smaller element to the right)
+        return res
+
+    def preprocess(self, heights):
+        left = self.get_prev_smallest(heights) # using monotonic increasing in reverse direction
+        right = self.get_next_smallest(heights) #using monotonic increasing in forward direction
+
+        return left, right
+
+    def largestRectangleArea(self, heights: List[int]) -> int:
         left, right = self.preprocess(heights)
         max_area = 0
 
@@ -74,8 +152,8 @@ class Solution:
 
         return max_area
 
-    # optimal
-    def largestRectangleArea(self, heights: List[int]) -> int:
+    # Approach 3: optimal just one monotonic increasing stack but used from the perspective of the element to be added
+    def largestRectangleArea_optimal(self, heights: List[int]) -> int:
         max_area = 0
 
         # Stack stores tuples: (start_index, height)
@@ -196,6 +274,10 @@ class Solution:
 
 if __name__ == '__main__':
     s = Solution()
+
+    heights=[7,1,7,2,2,4]
+    res = s.largestRectangleArea(heights)
+    print(res, res == 8)
 
     heights = [2, 1, 5, 6, 2, 3]
     res = s.largestRectangleArea(heights)
