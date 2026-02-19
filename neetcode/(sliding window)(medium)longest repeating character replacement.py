@@ -33,7 +33,7 @@ from collections import defaultdict
 
 
 class Solution:
-    def characterReplacement(self, s: str, k: int) -> int:
+    def characterReplacement_old(self, s: str, k: int) -> int:
         '''
         Sliding Window Approach:
         
@@ -79,3 +79,24 @@ class Solution:
             start += 1
 
         return max_len
+
+    def characterReplacement(self, s: str, k: int) -> int:
+        """Sliding window: outer loop = grow (add s[r]); inside = shrink then assign."""
+        l = 0
+        res = 0
+        counts = defaultdict(int)
+
+        for r in range(len(s)):
+            # 1. GROW: Add the right element to state
+            counts[s[r]] += 1
+
+            # 2. SHRINK: While window is invalid, move l
+            # Valid: (window_len - max_freq) <= k
+            while (r - l + 1) - max(counts.values()) > k:
+                counts[s[l]] -= 1
+                l += 1
+
+            # 3. ASSIGN: Window [l, r] is valid
+            res = max(res, r - l + 1)
+
+        return res

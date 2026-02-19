@@ -1,4 +1,3 @@
-
 from collections import Counter, defaultdict
 
 
@@ -6,32 +5,24 @@ class Solution:
     def checkInclusion(self, s1: str, s2: str) -> bool:
         if len(s1) > len(s2):
             return False
+        m, n = len(s1), len(s2)
+        target = Counter(s1)
+        window = defaultdict(int)
 
-        m = len(s1)
-        n = len(s2)
+        # Build the first window [0, m - 1]
+        for i in range(m):
+            window[s2[i]] += 1
 
-        s1_counts = Counter(s1)
-        s2_counts = defaultdict(int)
-
-        start = 0
-        end = m - 1
-
-        # build the window of comparision first
-        for i in range(start, end + 1):
-            s2_counts[s2[i]] += 1
-
+        start, end = 0, m - 1
         while end < n:
-            if s1_counts == s2_counts:
+            if window == target:
                 return True
-            else:
-                s2_counts[s2[start]] -= 1
-                if s2_counts[s2[start]] == 0:
-                    s2_counts.pop(s2[start])
-
-                start += 1
-
-                end += 1
-                if end < n:
-                    s2_counts[s2[end]] += 1
-
+            # Slide: drop left, advance, add right
+            window[s2[start]] -= 1
+            if window[s2[start]] == 0:
+                del window[s2[start]]
+            start += 1
+            end += 1
+            if end < n:
+                window[s2[end]] += 1
         return False

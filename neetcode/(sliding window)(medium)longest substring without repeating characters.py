@@ -58,3 +58,23 @@ class Solution:
             start += 1
 
         return longest
+
+    def lengthOfLongestSubstring_for_loop(self, s: str) -> int:
+        """Sliding window with for-loop: grow (add s[r]), shrink until valid, then evaluate."""
+        l = 0
+        res = 0
+        counts = defaultdict(int)
+
+        for r in range(len(s)):
+            # 1. GROW: Add the right element to state
+            counts[s[r]] += 1
+
+            # 2. SHRINK: While we have a duplicate, move l
+            while counts[s[r]] > 1:
+                counts[s[l]] -= 1
+                l += 1
+
+            # 3. EVALUATE: Window [l, r] has no duplicates
+            res = max(res, r - l + 1)
+
+        return res
