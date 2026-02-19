@@ -54,3 +54,20 @@ class Solution:
             right.append(levels[level][-1])
 
         return right
+
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+
+        def dfs(node, depth):
+            if not node:
+                return None
+            
+            # effectively the same as level order without the extra space
+            if depth == len(res):
+                res.append(node.val)
+
+            dfs(node.right, depth + 1)
+            dfs(node.left, depth + 1)
+
+        dfs(root, 0)
+        return res

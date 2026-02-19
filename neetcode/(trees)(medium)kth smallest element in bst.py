@@ -83,3 +83,26 @@ class Solution:
 
         dfs(root)
         return arr[k - 1]
+
+    def kthSmallest_optimal(self, root: Optional[TreeNode], k: int) -> int:
+        cnt = k
+        res = root.val
+
+        # when visiting inorder it is naturally in sorted order so we can use that to our advantage
+        def dfs(node):
+            nonlocal cnt, res
+            if not node:
+                return
+
+            dfs(node.left)
+
+            # when you visit a node decrement cnt and check if it is 0 -> then it is the kth smallest element
+            cnt -= 1
+            if cnt == 0:
+                res = node.val
+                return
+            
+            dfs(node.right)
+
+        dfs(root)
+        return res
