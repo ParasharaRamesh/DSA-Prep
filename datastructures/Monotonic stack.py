@@ -89,6 +89,65 @@ def previous_smaller(arr):
 
     return res
 
+# ----------------------------------------------------------------------------------------------------------------------------
+'''
+SPAN-BASED MONOTONIC STACK — MENTAL TEMPLATE
+
+MENTAL SHIFT 
+
+- All of the above functions are from the perspective of the element being popped while maintaining that monotonic property.
+    - i.e. for anything you pop while maintaining that montonic stack during the evaluation some element -> that is the next/previous  larger/smaller element
+    - anything to do with "neighbours". What is my immediate next/previous neighbour which is larger/smaller?
+- Another perspective is to think from the perspective of the element being added while maintaining the monotonic property.
+    - i.e. what is f(element being added to monotonic stack) = ? 
+    - RATHER than simulating monotonic property -> answering some question on the final state
+- Instead of asking "which elements is impacted because of the current element" the new perspective is "when this element is being added how far back does it influence?"
+
+USED WHEN
+
+- Each element wants to know how far it can extend
+- The answer is a RANGE, not a single neighbor
+- Typical phrasing:
+    * "consecutive"
+    * "ending at i"
+    * "largest area"
+    * "how many days"
+    * "how far left/right"
+
+KEY IDEAS
+
+- Each stack element stores (value, span)
+- Span represents how much territory this element already owns / impacts
+- When a new element arrives, it ABSORBS spans from weaker elements
+
+SUMMARY
+
+- Popping is not the goal
+- Popping is how we TRANSFER span ownership to the new element
+
+* Just think assuming its a span related question and we already had spans which monotonic stack version makes sense! and use that
+. e.g. in the online stack span leetcode question -> monotonic decreasing because at element if we already had span of elements below it then naturally it smonotonic decreasing because it cant be the other case
+
+'''
+
+# pseudocode
+def span_based_monotonic(arr):
+    stack = []  # (value, span)
+    result = []
+
+    for x in arr:
+        span = 1  # every element owns itself initially
+
+        # While previous elements are weaker,
+        # absorb their territory
+        while stack and violates_monotonic_condition(stack[-1][0], x):
+            prev_value, prev_span = stack.pop()
+            span += prev_span   # inherit their span
+
+        stack.append((x, span))
+        result.append(span)  # or use span to compute area, etc.
+
+    return result
 
 if __name__ == '__main__':
     arr = [2,1,5,3,7,6]
