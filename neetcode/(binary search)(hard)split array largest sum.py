@@ -29,4 +29,32 @@ Constraints:
 '''
 class Solution:
     def splitArray(self, nums: List[int], k: int) -> int:
-        pass
+        l, r = max(nums), sum(nums)
+
+        ans = float("inf")
+        while l <= r:
+            m = (l + r)//2
+
+            splits = self.get_num_splits(nums, m)
+            if splits == k:
+                ans = min(ans, m)
+                r = m - 1
+            elif splits > k:
+                l = m + 1
+            else:
+                r = m - 1
+
+        return ans if ans < float("inf") else l
+
+    def get_num_splits(self, nums, max_sum):
+        k = 1
+        curr = 0
+
+        for num in nums:
+            if curr + num <= max_sum: 
+                curr += num
+            else:
+                curr = num
+                k += 1
+
+        return k 
