@@ -26,6 +26,49 @@ Constraints:
 from functools import cache
 
 class Solution:
+    def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        total = sum(nums)
+        n = len(nums)
+
+        if total % k != 0:
+            return False
+
+        target = total // k
+
+        if max(nums) > target:
+            return False
+
+
+        subset_sums = [0]*k 
+        nums.sort(reverse=True)
+
+        def f(i):
+            nonlocal subset_sums
+
+            if i == n:
+                for j in range(k):
+                    if subset_sums[j] != target:
+                        return False
+
+                return True
+
+            for j in range(k):
+                if subset_sums[j] + nums[i] <= target:
+                    subset_sums[j] += nums[i]
+
+                    if f(i + 1):
+                        return True
+
+                    subset_sums[j] -= nums[i]
+
+                if subset_sums[j] == 0:
+                    break
+
+            return False
+
+        return f(0)
+
+class Solution:
     def makesquare_simple_tle(self, matchsticks: List[int]) -> bool:
         if sum(matchsticks) % 4 != 0:
             return False
