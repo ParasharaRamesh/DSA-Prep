@@ -44,7 +44,10 @@ class Solution:
         - went through each reachable index in reverse and tried picking the first index which could jump out of this range
         - but that idea was wrong with one of the test cases 
     . Therefore the only best thing which can be done in this case is to set it to the min_reach index which makes things very slow
-    . Time complexity = ?
+    . Time complexity: O(n^2)
+      Explanation: for each current `i`, the code scans all indices in `[i + minJump, min(i + maxJump, n-1)]` to compute `min_reach`/`max_reach`; in the worst case that scan is O(n) and the outer loop can run O(n) times.
+    . Space complexity: O(1)
+      Explanation: it only uses a constant number of variables (`i`, bounds, and min/max reach) and does not store extra arrays/lists proportional to `n`.
     '''
     def canReach_tle_simulation(self, s: str, minJump: int, maxJump: int) -> bool:
         if s[-1] != "0":
@@ -89,7 +92,10 @@ class Solution:
     '''
     . Dynamic programming approach
     . consider all zeros reachable when jumping min and max jump and go down the recursion path while caching to see if it is possible
-    . Time complexity = 
+    . Time complexity: O(n^2)
+      Explanation: memoization ensures each `f(i)` is computed once, but each computation still iterates across the full jump interval to build `reach`, which can sum to O(n^2) in the worst case.
+    . Space complexity: O(n)
+      Explanation: `@cache` stores results for up to `n` indices; recursion depth can also reach O(n).
     '''
     def canReach_memoization_mle(self, s: str, minJump: int, maxJump: int) -> bool:
         if s[-1] != "0":
@@ -143,7 +149,10 @@ class Solution:
 
     '''
     . Same approach as above just that it is tabulation since the recursion limit exceeded in the top down dp approach
-    . Time complexity = 
+    . Time complexity: O(n^2)
+      Explanation: for each `i` it scans `[i + minJump, min(i + maxJump, n-1)]` to build `reach`, and may then scan `reach` again until it finds a reachable cached state; worst-case total work is O(n^2).
+    . Space complexity: O(n)
+      Explanation: `cache` stores one boolean per index (O(n)); `reach` is temporary inside the loop iteration.
     '''
     def canReach_tabulation_tle(self, s: str, minJump: int, maxJump: int) -> bool:
         if s[-1] != "0":
@@ -202,7 +211,10 @@ class Solution:
     . We construct this jump graph and then perform bfs on it
     . we first keep track of all of the zeros and then get the l and r range using bisect
     . This gave memory limit exceeded because of the size of the graph and the visited set
-    . Time complexity = 
+    . Time complexity: O(n^2)
+      Explanation: in the worst case there are O(n) zero indices, and each zero can have edges to O(n) other zero indices within `[minJump, maxJump]`, making graph construction and BFS traverse O(V+E)=O(n^2).
+    . Space complexity: O(n^2)
+      Explanation: `graph` stores adjacency lists for all those edges, so memory is dominated by O(n^2) stored connections (which leads to MLE).
 
     '''
     def canReach_mle_bfs(self, s: str, minJump: int, maxJump: int) -> bool:
@@ -253,7 +265,10 @@ class Solution:
     . we construct it along the way without keeping track of visited
     . for a range of [start, end] -> add to the deque whichever ones are 0s
     . along the way check if we reach the ending
-    . Time complexity = 
+    . Time complexity: O(n)
+      Explanation: `farthest` only increases; `start = max(i + minJump, farthest + 1)` ensures indices already covered by previous popped nodes are not re-scanned. Thus, each index is considered at most once overall.
+    . Space complexity: O(n)
+      Explanation: the deque can store up to O(n) indices in the worst case (all reachable zeros), and the rest is O(1) auxiliary space.
     ''' 
     def canReach(self, s: str, minJump: int, maxJump: int) -> bool:
         q = deque([0])
