@@ -107,4 +107,3 @@ if __name__ == "__main__":
     expected = ["pine apple pen apple","pineapple pen apple","pine applepen apple"]
     res = sol.wordBreak(s, wordDict)
     assert set(res) == set(expected), f"{s=} {wordDict=} | {res=} {expected=}"
-
