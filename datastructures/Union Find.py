@@ -54,13 +54,45 @@ class UnionFind:
         root_b = self.find(b)
         return root_a is not None and root_a == root_b
 
+    def get_connected_components(self):
+        """
+        Return all connected components as a list of lists.
+        Each inner list contains all nodes that share the same root.
+        """
+        components_by_root = {}
 
-class PathCompressionUnionFind(UnionFind):
+        # Walk all known nodes and bucket them by representative/root.
+        for node in self.parent:
+            root = self.find(node)
+            if root is None:
+                continue
+            if root not in components_by_root:
+                components_by_root[root] = []
+            components_by_root[root].append(node)
+
+        # Stable output for readability and tests.
+        connected_components = []
+        for root in sorted(components_by_root):
+            connected_components.append(sorted(components_by_root[root]))
+        return connected_components
+
+
+class PathCompressionUnionFind:
     """
     Union-Find optimized with path compression.
     Path compression is applied in find(), flattening the tree for future queries.
     """
+    def __init__(self):
+        self.parent = {}
 
+    def create_set(self, value):
+        """
+        Create a standalone set for value if it does not exist yet.
+        * Make all values point to None initially -> topmost nodes
+        """
+        if value not in self.parent:
+            self.parent[value] = None
+    
     def find(self, value):
         """Find with path compression (recursive)."""
         if value not in self.parent:
@@ -79,15 +111,51 @@ class PathCompressionUnionFind(UnionFind):
             curr = parent_curr if parent_curr is not None else root
         return root
 
+    def union(self, a, b):
+        """Merge two sets (naive attach)."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        # If either of the values are not in the set, then return
+        if root_a is None or root_b is None:
+            return
+        if root_a != root_b:
+            # Naively make root_b point to root_a -> basically make the parent of root_b point to root_a
+            self.parent[root_b] = root_a
 
-class RankUnionFind(UnionFind):
+    def connected(self, a, b):
+        """Return True if a and b belong to the same set."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        return root_a is not None and root_a == root_b
+
+    def get_connected_components(self):
+        """
+        Return all connected components as a list of lists.
+        Calling find() here also compresses paths along the way.
+        """
+        components_by_root = {}
+
+        for node in self.parent:
+            root = self.find(node)
+            if root is None:
+                continue
+            if root not in components_by_root:
+                components_by_root[root] = []
+            components_by_root[root].append(node)
+
+        connected_components = []
+        for root in sorted(components_by_root):
+            connected_components.append(sorted(components_by_root[root]))
+        return connected_components
+
+class RankUnionFind:
     """
     Union-Find optimized with union by rank (approximate tree height).
     Does not apply path compression.
     """
 
     def __init__(self):
-        super().__init__()
+        self.parent = {}
         self.rank = {}
 
     def create_set(self, value):
@@ -95,6 +163,19 @@ class RankUnionFind(UnionFind):
         if value not in self.parent:
             self.parent[value] = None
             self.rank[value] = 0
+
+    def find(self, value):
+        """
+        Find the root representative without path compression.
+        * Traverse up the tree until we reach the topmost node (None)
+        * Return the parent/root. Which is that node which has a parent pointer as None (almost like linked list traversal)
+        """
+        if value not in self.parent:
+            return None
+        curr = value
+        while self.parent[curr] is not None:
+            curr = self.parent[curr]
+        return curr
 
     def union(self, a, b):
         """Merge by rank: attach smaller-rank tree under larger-rank tree."""
@@ -115,12 +196,36 @@ class RankUnionFind(UnionFind):
             self.parent[root_b] = root_a
             self.rank[root_a] = rank_a + 1
 
-class SizeUnionFind(UnionFind):
+    def connected(self, a, b):
+        """Return True if a and b belong to the same set."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        return root_a is not None and root_a == root_b
+
+    def get_connected_components(self):
+        """Return all connected components as a list of lists."""
+        components_by_root = {}
+
+        for node in self.parent:
+            root = self.find(node)
+            if root is None:
+                continue
+            if root not in components_by_root:
+                components_by_root[root] = []
+            components_by_root[root].append(node)
+
+        connected_components = []
+        for root in sorted(components_by_root):
+            connected_components.append(sorted(components_by_root[root]))
+        return connected_components
+
+# Recommended to use since it is a more easier to remember variation of RankUnionFind and we get the added benefit of knowing the size of one connected component
+class SizeUnionFind:
     """
     Similar to UF by rank, instead of keeping track of the rank you can keep track of the size of components inside one connected component
     """
     def __init__(self):
-        super().__init__()
+        self.parent = {}
         self.size = {}
 
     def create_set(self, value):
@@ -128,6 +233,19 @@ class SizeUnionFind(UnionFind):
         if value not in self.parent:
             self.parent[value] = None
             self.size[value] = 1 # there is one node in its own connected component so far
+        
+    def find(self, value):
+        """
+        Find the root representative without path compression.
+        * Traverse up the tree until we reach the topmost node (None)
+        * Return the parent/root. Which is that node which has a parent pointer as None (almost like linked list traversal)
+        """
+        if value not in self.parent:
+            return None
+        curr = value
+        while self.parent[curr] is not None:
+            curr = self.parent[curr]
+        return curr
 
     def union(self, a, b):
         """Merge by size: attach smaller-size tree under larger-size tree."""
@@ -151,6 +269,29 @@ class SizeUnionFind(UnionFind):
         """getting the size of the connected component node belongs to"""
         parent = self.find(node)
         return self.size[parent]
+
+    def connected(self, a, b):
+        """Return True if a and b belong to the same set."""
+        root_a = self.find(a)
+        root_b = self.find(b)
+        return root_a is not None and root_a == root_b
+
+    def get_connected_components(self):
+        """Return all connected components as a list of lists."""
+        components_by_root = {}
+
+        for node in self.parent:
+            root = self.find(node)
+            if root is None:
+                continue
+            if root not in components_by_root:
+                components_by_root[root] = []
+            components_by_root[root].append(node)
+
+        connected_components = []
+        for root in sorted(components_by_root):
+            connected_components.append(sorted(components_by_root[root]))
+        return connected_components
 
 if __name__ == '__main__':
     # Demonstration of four variants with small, readable examples
@@ -302,3 +443,32 @@ if __name__ == '__main__':
     print(f"Component containing 1 has size: {uf_size.get_size(1)}")  # Should be 4
     print(f"Component containing 5 has size: {uf_size.get_size(5)}")  # Should be 2
     print(f"Component containing 6 has size: {uf_size.get_size(6)}")  # Should be 2
+
+    # 5) Quick correctness tests for get_connected_components()
+    print("\n" + "="*50)
+    print("5) get_connected_components() Tests")
+    print("="*50)
+
+    def run_component_test(uf_instance, class_name):
+        # Build three components: [1,2,3], [4,5], [6]
+        for value in [1, 2, 3, 4, 5, 6]:
+            uf_instance.create_set(value)
+
+        uf_instance.union(1, 2)
+        uf_instance.union(2, 3)
+        uf_instance.union(4, 5)
+
+        expected_components = [[1, 2, 3], [4, 5], [6]]
+        actual_components = uf_instance.get_connected_components()
+
+        assert actual_components == expected_components, (
+            f"{class_name} failed.\n"
+            f"Expected: {expected_components}\n"
+            f"Actual:   {actual_components}"
+        )
+        print(f"{class_name} passed -> {actual_components}")
+
+    run_component_test(UnionFind(), "UnionFind")
+    run_component_test(PathCompressionUnionFind(), "PathCompressionUnionFind")
+    run_component_test(RankUnionFind(), "RankUnionFind")
+    run_component_test(SizeUnionFind(), "SizeUnionFind")
